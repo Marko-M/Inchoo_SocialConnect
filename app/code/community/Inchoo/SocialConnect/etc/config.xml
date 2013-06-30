@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+/**
+* Inchoo
+*
+* NOTICE OF LICENSE
+*
+* This source file is subject to the Open Software License (OSL 3.0)
+* that is bundled with this package in the file LICENSE.txt.
+* It is also available through the world-wide-web at this URL:
+* http://opensource.org/licenses/osl-3.0.php
+* If you did not receive a copy of the license and are unable to
+* obtain it through the world-wide-web, please send an email
+* to license@magentocommerce.com so we can send you a copy immediately.
+*
+* DISCLAIMER
+*
+* Please do not edit or add to this file if you wish to upgrade
+* Magento or this extension to newer versions in the future.
+** Inchoo *give their best to conform to
+* "non-obtrusive, best Magento practices" style of coding.
+* However,* Inchoo *guarantee functional accuracy of
+* specific extension behavior. Additionally we take no responsibility
+* for any possible issue(s) resulting from extension usage.
+* We reserve the full right not to provide any kind of support for our free extensions.
+* Thank you for your understanding.
+*
+* @category Inchoo
+* @package SocialConnect
+* @author Marko Martinović <marko.martinovic@inchoo.net>
+* @copyright Copyright (c) Inchoo (http://inchoo.net/)
+* @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+*/
+-->
+
+<config>
+    <modules>
+        <Inchoo_SocialConnect>
+            <version>0.1.0</version>
+        </Inchoo_SocialConnect>
+    </modules>
+    <default>
+        <customer>
+            <inchoo_socialconnect>
+                <google_enabled>0</google_enabled>
+            </inchoo_socialconnect>
+        </customer>
+    </default>
+    <frontend>
+        <layout>
+            <updates>
+                <inchoo_socialconnect>
+                    <file>inchoo_socialconnect.xml</file>
+                </inchoo_socialconnect>
+            </updates>
+        </layout>
+    </frontend>
+    <adminhtml>
+        <layout>
+            <updates>
+                <inchoo_socialconnect>
+                    <file>inchoo_socialconnect.xml</file>
+                </inchoo_socialconnect>
+            </updates>
+        </layout>
+    </adminhtml>    
+    <global>
+        <models>
+            <inchoo_socialconnect>
+                <class>Inchoo_SocialConnect_Model</class>
+            </inchoo_socialconnect>
+        </models>
+        <blocks>
+            <inchoo_socialconnect>
+                <class>Inchoo_SocialConnect_Block</class>
+            </inchoo_socialconnect>            
+        </blocks>
+        <helpers>
+            <inchoo_socialconnect>
+                <class>Inchoo_SocialConnect_Helper</class>
+            </inchoo_socialconnect>
+        </helpers>
+        <resources>
+            <inchoo_socialconnect_setup>
+                <setup>
+                    <module>Inchoo_SocialConnect</module>
+                    <class>Inchoo_SocialConnect_Model_Resource_Setup</class>
+                </setup>
+            </inchoo_socialconnect_setup>
+        </resources>        
+    </global>
+    <frontend>
+        <routers>
+            <inchoo_socialconnect>
+                <use>standard</use>
+                <args>
+                    <module>Inchoo_SocialConnect</module>
+                    <frontName>socialconnect</frontName>
+                </args>
+            </inchoo_socialconnect>
+        </routers>  
+    </frontend>    
+</config>

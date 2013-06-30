@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+/**
+* Inchoo
+*
+* NOTICE OF LICENSE
+*
+* This source file is subject to the Open Software License (OSL 3.0)
+* that is bundled with this package in the file LICENSE.txt.
+* It is also available through the world-wide-web at this URL:
+* http://opensource.org/licenses/osl-3.0.php
+* If you did not receive a copy of the license and are unable to
+* obtain it through the world-wide-web, please send an email
+* to license@magentocommerce.com so we can send you a copy immediately.
+*
+* DISCLAIMER
+*
+* Please do not edit or add to this file if you wish to upgrade
+* Magento or this extension to newer versions in the future.
+** Inchoo *give their best to conform to
+* "non-obtrusive, best Magento practices" style of coding.
+* However,* Inchoo *guarantee functional accuracy of
+* specific extension behavior. Additionally we take no responsibility
+* for any possible issue(s) resulting from extension usage.
+* We reserve the full right not to provide any kind of support for our free extensions.
+* Thank you for your understanding.
+*
+* @category Inchoo
+* @package SocialConnect
+* @author Marko Martinović <marko.martinovic@inchoo.net>
+* @copyright Copyright (c) Inchoo (http://inchoo.net/)
+* @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+*/
+-->
+
+<layout>
+    <default>
+        <reference name="head">
+            <action method="addItem"
+                ifconfig="customer/inchoo_socialconnect_google/enabled">
+                <type>skin_css</type>
+                <name>inchoo_socialconnect/google/css/button.css</name>
+            </action>
+            <action method="addItem"
+                ifconfig="customer/inchoo_socialconnect_facebook/enabled">
+                <type>skin_css</type>
+                <name>inchoo_socialconnect/facebook/css/button.css</name>
+            </action>
+        </reference>
+    </default>
+
+    <customer_account_login>
+        <reference name="head">
+            <action method="addItem">
+                <type>skin_css</type>
+                <name>inchoo_socialconnect/css/styles.css</name>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="inchoo_socialconnect/login" name="inchoo_socialconnect_login">
+                <block type="inchoo_socialconnect/google_button" name="inchoo_socialconnect_google_login_button" />
+                <block type="inchoo_socialconnect/facebook_button" name="inchoo_socialconnect_facebook_login_button" />
+            </block>
+        </reference>
+    </customer_account_login>
+
+    <customer_account>
+        <reference name="customer_account_navigation">
+            <action method="addLink" translate="label" module="inchoo_socialconnect"
+                ifconfig="customer/inchoo_socialconnect_google/enabled">
+                <name>inchoo_socialconnect_google</name>
+                <path>socialconnect/account/google</path>
+                <label>Google Connect</label>
+            </action>
+            <action method="addLink" translate="label" module="inchoo_socialconnect"
+                ifconfig="customer/inchoo_socialconnect_facebook/enabled">
+                <name>inchoo_socialconnect_facebook</name>
+                <path>socialconnect/account/facebook</path>
+                <label>Facebook Connect</label>
+            </action>
+        </reference>
+    </customer_account>
+
+    <inchoo_socialconnect_account_google translate="label">
+        <label>Customer My Account Google Connect</label>
+        <update handle="customer_account"/>
+        <reference name="head">
+            <action method="setTitle" translate="title" module="inchoo_socialconnect"
+                    >
+                <title>Google Connect</title>
+            </action>
+            <action method="addItem">
+                <type>skin_css</type>
+                <name>inchoo_socialconnect/css/styles.css</name>
+            </action>
+        </reference>
+        <reference name="my.account.wrapper">
+            <block type="inchoo_socialconnect/google_account" name="inchoo_socialconnect_google_account">
+                <block type="inchoo_socialconnect/google_button" name="inchoo_socialconnect_account_google_button" />
+            </block>
+        </reference>
+        <reference name="customer_account_navigation">
+            <action method="setActive" translate="label" module="inchoo_socialconnect">
+                <path>socialconnect/account/google</path>
+            </action>
+        </reference>
+    </inchoo_socialconnect_account_google>
+
+   <inchoo_socialconnect_account_facebook translate="label">
+        <label>Customer My Account Facebook Connect</label>
+        <update handle="customer_account"/>
+        <reference name="head">
+            <action method="setTitle" translate="title" module="inchoo_socialconnect">
+                <title>Facebook Connect</title>
+            </action>
+            <action method="addItem">
+                <type>skin_css</type>
+                <name>inchoo_socialconnect/css/styles.css</name>
+            </action>
+        </reference>
+        <reference name="my.account.wrapper">
+            <block type="inchoo_socialconnect/facebook_account" name="inchoo_socialconnect_facebook_account">
+                <block type="inchoo_socialconnect/facebook_button" name="inchoo_socialconnect_account_facebook_button" />
+            </block>
+        </reference>
+        <reference name="customer_account_navigation">
+            <action method="setActive" translate="label" module="inchoo_socialconnect">
+                <path>socialconnect/account/facebook</path>
+            </action>
+        </reference>
+    </inchoo_socialconnect_account_facebook>
+
+    <checkout_onepage_index>
+        <reference name="head">
+            <action method="addItem">
+                <type>skin_css</type>
+                <name>inchoo_socialconnect/css/styles.css</name>
+            </action>
+        </reference>
+        <reference name="checkout.onepage.login">
+            <action method="setTemplate" >
+                <template>inchoo/socialconnect/checkout/onepage/login.phtml</template>
+            </action>
+            <block type="inchoo_socialconnect/checkout" name="inchoo_socialconnect_checkout">
+                <block type="inchoo_socialconnect/google_button" name="inchoo_socialconnect_checkout_google_button" />
+                <block type="inchoo_socialconnect/facebook_button" name="inchoo_socialconnect_checkout_facebook_button" />
+            </block>
+        </reference>
+    </checkout_onepage_index>
+</layout>

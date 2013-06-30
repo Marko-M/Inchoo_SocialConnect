@@ -1,0 +1,71 @@
+<?php
+/**
+* Inchoo
+*
+* NOTICE OF LICENSE
+*
+* This source file is subject to the Open Software License (OSL 3.0)
+* that is bundled with this package in the file LICENSE.txt.
+* It is also available through the world-wide-web at this URL:
+* http://opensource.org/licenses/osl-3.0.php
+* If you did not receive a copy of the license and are unable to
+* obtain it through the world-wide-web, please send an email
+* to license@magentocommerce.com so we can send you a copy immediately.
+*
+* DISCLAIMER
+*
+* Please do not edit or add to this file if you wish to upgrade
+* Magento or this extension to newer versions in the future.
+** Inchoo *give their best to conform to
+* "non-obtrusive, best Magento practices" style of coding.
+* However,* Inchoo *guarantee functional accuracy of
+* specific extension behavior. Additionally we take no responsibility
+* for any possible issue(s) resulting from extension usage.
+* We reserve the full right not to provide any kind of support for our free extensions.
+* Thank you for your understanding.
+*
+* @category Inchoo
+* @package SocialConnect
+* @author Marko Martinović <marko.martinovic@inchoo.net>
+* @copyright Copyright (c) Inchoo (http://inchoo.net/)
+* @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+*/
+?>
+<div class="inchoo-socialconnect-login">
+    <div class="account-login">
+        <div class="col2-set">
+            <?php if($this->_googleEnabled()): ?>
+            <div class="col-1 new-users">
+                <div class="content">
+                    <h2><?php echo $this->__('Google Connect'); ?></h2>
+                    <p><?php echo $this->__('You can also log into our shop using your <strong>Google</strong> account credentials.'); ?></p>
+                </div>
+            </div>
+            <?php endif; ?>
+            <?php if($this->_facebookEnabled()): ?>
+            <div class="col-2 new-users">
+                <div class="content">
+                    <h2><?php echo $this->__('Facebook Connect'); ?></h2>
+                    <p><?php echo $this->__('You can also log into our shop using your <strong>Facebook</strong> account credentials.'); ?></p>
+                </div>
+            </div>   
+            <?php endif; ?>
+        </div>
+        <div class="col2-set">
+            <?php if($this->_googleEnabled()): ?>
+            <div class="col-1">
+                <div class="buttons-set">
+                    <?php echo $this->getChildHtml('inchoo_socialconnect_google_login_button'); ?>
+                </div>
+            </div>
+            <?php endif; ?>
+            <?php if($this->_facebookEnabled()): ?>
+            <div class="col-2">
+                <div class="buttons-set">
+                    <?php echo $this->getChildHtml('inchoo_socialconnect_facebook_login_button'); ?>
+                </div>
+            </div>         
+            <?php endif; ?>
+        </div>
+    </div>    
+</div>
