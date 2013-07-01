@@ -39,11 +39,8 @@ class Inchoo_SocialConnect_Block_Login extends Mage_Core_Block_Template
     protected function _construct() {
         parent::_construct();
         
-        $modelGoogle = Mage::getSingleton('inchoo_socialconnect/google_client');
-        $modelFacebook = Mage::getSingleton('inchoo_socialconnect/facebook_client');
-        
-        $this->clientGoogle = $modelGoogle->getClient();
-        $this->clientFacebook = $modelFacebook->getClient();
+        $this->clientGoogle = Mage::getSingleton('inchoo_socialconnect/google_client');
+        $this->clientFacebook = Mage::getSingleton('inchoo_socialconnect/facebook_client');
         
         if(!$this->clientGoogle && ! $this->clientFacebook)
             return;

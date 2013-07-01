@@ -39,10 +39,10 @@ class Inchoo_SocialConnect_Block_Facebook_Account extends Mage_Core_Block_Templa
     protected function _construct() {
         parent::_construct();
 
-        $model = Mage::getSingleton('inchoo_socialconnect/facebook_client');
-
-        if(!($this->client = $model->getClient()))
-                return;
+        $this->client = Mage::getSingleton('inchoo_socialconnect/facebook_client');
+        if(!($this->client->isEnabled())) {
+            return;
+        }
 
         $this->userInfo = Mage::registry('inchoo_socialconnect_userinfo');
 

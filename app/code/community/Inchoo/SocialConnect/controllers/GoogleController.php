@@ -117,11 +117,9 @@ class Inchoo_SocialConnect_GoogleController extends Mage_Core_Controller_Front_A
 
         if ($code) {
             // Google API green light - proceed
-            $model = Mage::getSingleton('inchoo_socialconnect/google_client');
-            $client = $model->getClient();
+            $client = Mage::getSingleton('inchoo_socialconnect/google_client');
 
             $userInfo = $client->api('/userinfo');
-            
             $token = $client->getAccessToken();
 
             $customersByGoogleId = Mage::helper('inchoo_socialconnect/google')

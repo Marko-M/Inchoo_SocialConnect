@@ -31,8 +31,6 @@
 * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
 */
 
-require_once(Mage::getBaseDir('lib') . '/FacebookApiPhpClient/Facebook_Client.php');
-
 class Inchoo_SocialConnect_Model_Facebook_Client
 {
     const REDIRECT_URI_ROUTE = 'socialconnect/facebook/connect';
@@ -41,28 +39,201 @@ class Inchoo_SocialConnect_Model_Facebook_Client
     const XML_PATH_CLIENT_ID = 'customer/inchoo_socialconnect_facebook/client_id';
     const XML_PATH_CLIENT_SECRET = 'customer/inchoo_socialconnect_facebook/client_secret';
 
-    protected $client = null;
+    const OAUTH2_SERVICE_URI = 'https://graph.facebook.com';
+    const OAUTH2_AUTH_URI = 'https://graph.facebook.com/oauth/authorize';
+    const OAUTH2_TOKEN_URI = 'https://graph.facebook.com/oauth/access_token';    
     
-    public function __construct() {
-        $enabled = $this->_isEnabled();
-        $clientId = $this->_getClientId();
-        $clientSecret = $this->_getClientSecret();
+    protected $clientId = null;
+    protected $clientSecret = null;
+    protected $redirectUri = null;
+    protected $state = '';
+    protected $scope = array('email', 'user_birthday');
+    
+    protected $token = null;
+    
+    public function __construct($params = array()) 
+    {
+        if(($this->isEnabled = $this->_isEnabled())) {
+            $this->clientId = $this->_getClientId();
+            $this->clientSecret = $this->_getClientSecret();
+            $this->redirectUri = Mage::getModel('core/url')->sessionUrlVar(
+                Mage::getUrl(self::REDIRECT_URI_ROUTE)
+            );
 
-        if(!empty($enabled)) {
-            $this->client = new Facebook_Client(array(
-                'client_id' => $clientId,
-                'client_secret' => $clientSecret,
-                'redirect_uri' => Mage::getModel('core/url')->sessionUrlVar(
-                    Mage::getUrl(self::REDIRECT_URI_ROUTE)
-                )
-            ));
+            if(!empty($params['scope'])) {
+                $this->scope = $params['scope'];
+            }
+
+            if(!empty($params['state'])) {
+                $this->state = $params['state'];
+            }
         }
     }
-
-    public function getClient()
+    
+    public function isEnabled()
     {
-        return $this->client;
+        return (bool) $this->isEnabled;
     }
+    
+    public function getClientId()
+    {
+        return $this->clientId;
+    }
+
+    public function getClientSecret()
+    {
+        return $this->clientSecret;
+    }
+
+    public function getRedirectUri()
+    {
+        return $this->redirectUri;
+    }
+
+    public function getScope()
+    {
+        return $this->scope;
+    }
+
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    public function setState($state)
+    {
+        $this->state = $state;
+    }
+    
+    public function setAccessToken($token)
+    {
+        $this->token = json_decode($token);
+    }
+    
+    public function getAccessToken()
+    {
+        if(empty($this->token)) {
+            $this->fetchAccessToken();
+        }
+        
+        return json_encode($this->token);
+    }
+    
+    public function createAuthUrl()
+    {
+        $url =
+        self::OAUTH2_AUTH_URI.'?'.
+            http_build_query(
+                array(
+                    'client_id' => $this->clientId,
+                    'redirect_uri' => $this->redirectUri,
+                    'state' => $this->state,
+                    'scope' => implode(',', $this->scope)
+                    )
+            );
+        return $url;
+    }    
+    
+    public function api($endpoint, $method = 'GET', $params = array())
+    {
+        if(empty($this->token)) {
+            $this->fetchAccessToken();
+        }
+        
+        $url = self::OAUTH2_SERVICE_URI.$endpoint;
+        
+        $method = strtoupper($method);
+        
+        $params = array_merge(array(
+            'access_token' => $this->token->access_token
+        ), $params);
+        
+        $response = $this->_httpRequest($url, $method, $params);
+        
+        $decoded_response = json_decode($response);
+
+        if (isset($decoded_response->error)) {
+            // Token expired, permissions revoked or password changed
+            if ($decoded_response->error->type == 'OAuthException') {
+                throw new FOAuthException($decoded_response->error->message);
+            } else {
+                throw new Exception($decoded_response->error->message);
+            }
+        }
+
+        return $decoded_response;        
+    }  
+    
+    protected function fetchAccessToken()
+    {
+        if(empty($_REQUEST['code'])) {
+            throw new Exception('Unable to retrieve access code');
+        }
+        
+        $response = $this->_httpRequest(
+            self::OAUTH2_TOKEN_URI,
+            'POST',
+            array(
+                'code' => $_REQUEST['code'],
+                'redirect_uri' => $this->redirectUri,
+                'client_id' => $this->clientId,
+                'client_secret' => $this->clientSecret,
+                'grant_type' => 'authorization_code'
+            )
+        );
+        
+        $decoded_response = json_decode($response);
+        
+        /* 
+         * Per http://tools.ietf.org/html/draft-ietf-oauth-v2-27#section-5.1
+         * Facebook should return data using the "application/json" media type.
+         * Facebook violates OAuth2 specification and returns string. If this
+         * ever gets fixed, following condition will not be used anymore.
+         */
+        if(empty($decoded_response)) {
+            $parsed_response = array();
+            parse_str($response, $parsed_response);
+            
+            $decoded_response = json_decode(json_encode($parsed_response));
+        }
+
+        if (isset($decoded_response->error)) {
+            if ($decoded_response->error->type == 'OAuthException') {
+                throw new FOAuthException($decoded_response->error->message);
+            } else {
+                throw new Exception($decoded_response->error->message);   
+            }
+        }
+
+        $this->token = $decoded_response;
+    }    
+    
+    protected function _httpRequest($url, $method = 'GET', $params = array())
+    {
+        $client = new Zend_Http_Client($url);
+        
+        switch ($method) {
+            case 'GET':
+                $client->setParameterGet($params);
+                break;
+            case 'POST':
+                $client->setParameterPost($params);
+                break;
+            case 'DELETE':
+                $client->setParameterGet($params);
+                break;  
+            default:
+                throw new Exception('No supported HTTP method');            
+        }   
+                
+        $response = $client->request($method);
+        
+        if($response->isError()) {
+            throw new Exception('Error while making the request');            
+        }
+        
+        return $response->getBody();
+    }    
 
     protected function _isEnabled()
     {
@@ -85,3 +256,6 @@ class Inchoo_SocialConnect_Model_Facebook_Client
     }
 
 }
+
+class FOAuthException extends Exception
+{}

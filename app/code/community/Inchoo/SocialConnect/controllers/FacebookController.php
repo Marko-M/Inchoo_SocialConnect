@@ -117,8 +117,7 @@ class Inchoo_SocialConnect_FacebookController extends Mage_Core_Controller_Front
 
         if ($code) {
             // Facebook API green light - proceed
-            $model = Mage::getSingleton('inchoo_socialconnect/facebook_client');
-            $client = $model->getClient();
+            $client = Mage::getSingleton('inchoo_socialconnect/facebook_client');
 
             $userInfo = $client->api('/me');
             $token = $client->getAccessToken();

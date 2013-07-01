@@ -33,31 +33,32 @@
 
 class Inchoo_SocialConnect_Model_Google_Userinfo
 {
+    protected $client = null;
     protected $userInfo = null;
 
-    public function __construct() {        
+    public function __construct() {
         if(!Mage::getSingleton('customer/session')->isLoggedIn())
             return;
-        
-        $model = Mage::getSingleton('inchoo_socialconnect/google_client');
-        if(!($client = $model->getClient())) {
+
+        $this->client = Mage::getSingleton('inchoo_socialconnect/google_client');
+        if(!($this->client->isEnabled())) {
             return;
-        } 
-        
+        }
+
         $customer = Mage::getSingleton('customer/session')->getCustomer();
         if(($socialconnectGid = $customer->getInchooSocialconnectGid()) &&
                 ($socialconnectGtoken = $customer->getInchooSocialconnectGtoken())) {
             $helper = Mage::helper('inchoo_socialconnect/google');
 
             try{
-                $client->setAccessToken($socialconnectGtoken);
-                
-                $this->userInfo = $client->api('/userinfo');                
+                $this->client->setAccessToken($socialconnectGtoken);
 
-                /* The access token may have been updated automatically due to 
+                $this->userInfo = $this->client->api('/userinfo');
+
+                /* The access token may have been updated automatically due to
                  * access type 'offline' */
-                $customer->setInchooSocialconnectGtoken($client->getAccessToken());
-                $customer->save();           
+                $customer->setInchooSocialconnectGtoken($this->client->getAccessToken());
+                $customer->save();
 
             } catch(GOAuthException $e) {
                 /* Token expired (shouldn't happen due to access type 'offline',
@@ -66,14 +67,14 @@ class Inchoo_SocialConnect_Model_Google_Userinfo
                 $helper->disconnect($customer);
                 Mage::getSingleton('core/session')
                     ->addNotice('Permission expired or account password changed.
-                        You can restore permissions by connecting your Google 
+                        You can restore permissions by connecting your Google
                         account again.');
             } catch(Exception $e) {
                 // General exception
                 $helper->disconnect($customer);
                 Mage::getSingleton('core/session')->addError($e->getMessage());
             }
-            
+
         }
     }
 

@@ -33,46 +33,47 @@
 
 class Inchoo_SocialConnect_Model_Facebook_Userinfo
 {
+    protected $client = null;
     protected $userInfo = null;
 
-    public function __construct() {        
+    public function __construct() {
         if(!Mage::getSingleton('customer/session')->isLoggedIn())
             return;
-        
-        $model = Mage::getSingleton('inchoo_socialconnect/facebook_client');
-        if(!($client = $model->getClient())) {
+
+        $this->client = Mage::getSingleton('inchoo_socialconnect/facebook_client');
+        if(!($this->client->isEnabled())) {
             return;
         }
-        
+
         $customer = Mage::getSingleton('customer/session')->getCustomer();
         if(($socialconnectFid = $customer->getInchooSocialconnectFid()) &&
                 ($socialconnectFtoken = $customer->getInchooSocialconnectFtoken())) {
             $helper = Mage::helper('inchoo_socialconnect/facebook');
 
-            try{       
-                $client->setAccessToken($socialconnectFtoken);
-                $this->userInfo = $client->api(
+            try{
+                $this->client->setAccessToken($socialconnectFtoken);
+                $this->userInfo = $this->client->api(
                     '/me',
-                    'get',
+                    'GET',
                     array(
-                        'fields' => 
+                        'fields' =>
                         'id,name,first_name,last_name,link,birthday,gender,email,picture.type(large)'
                     )
                 );
 
-            } catch(FOAuthException $e) {                
+            } catch(FOAuthException $e) {
                 // Token expired permissions revoked or password changed
                 $helper->disconnect($customer);
                 Mage::getSingleton('core/session')
                     ->addNotice('Permission expired or account password changed.
-                        You can restore permissions by connecting your Facebook 
+                        You can restore permissions by connecting your Facebook
                         account again.');
             } catch(Exception $e) {
                 // General exception
                 $helper->disconnect($customer);
                 Mage::getSingleton('core/session')->addError($e->getMessage());
             }
-            
+
         }
     }
 

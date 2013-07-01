@@ -39,14 +39,15 @@ class Inchoo_SocialConnect_Block_Google_Account extends Mage_Core_Block_Template
     protected function _construct() {
         parent::_construct();
 
-        $model = Mage::getSingleton('inchoo_socialconnect/google_client');
-
-        if(!($this->client = $model->getClient()))
-                return;
+        $this->client = Mage::getSingleton('inchoo_socialconnect/google_client');
+        if(!($this->client->isEnabled())) {
+            return;
+        }
 
         $this->userInfo = Mage::registry('inchoo_socialconnect_userinfo');
 
         $this->setTemplate('inchoo/socialconnect/google/account.phtml');
+
     }
 
     protected function _hasUserInfo()
@@ -86,11 +87,11 @@ class Inchoo_SocialConnect_Block_Google_Account extends Mage_Core_Block_Template
 
         return null;
     }
-    
+
     protected function _getName()
     {
         return $this->userInfo->name;
-    }    
+    }
 
     protected function _getGender()
     {
