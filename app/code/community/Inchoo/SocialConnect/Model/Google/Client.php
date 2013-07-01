@@ -280,6 +280,7 @@ class Inchoo_SocialConnect_Model_Google_Client
 
         $this->token->access_token = $decoded_response->access_token;
         $this->token->expires_in = $decoded_response->expires_in;
+        $this->token->created = time();
     }    
     
     protected function isAccessTokenExpired() {
