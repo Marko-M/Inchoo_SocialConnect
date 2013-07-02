@@ -61,15 +61,7 @@ class Inchoo_SocialConnect_Model_Facebook_Userinfo
                     )
                 );
 
-            } catch(FOAuthException $e) {
-                // Token expired permissions revoked or password changed
-                $helper->disconnect($customer);
-                Mage::getSingleton('core/session')
-                    ->addNotice('Permission expired or account password changed.
-                        You can restore permissions by connecting your Facebook
-                        account again.');
             } catch(Exception $e) {
-                // General exception
                 $helper->disconnect($customer);
                 Mage::getSingleton('core/session')->addError($e->getMessage());
             }

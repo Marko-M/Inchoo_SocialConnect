@@ -193,8 +193,7 @@ class Inchoo_SocialConnect_Model_Google_Client
         $decoded_response = json_decode($response);
 
         if (isset($decoded_response->error)) {
-            // Token expired, permissions revoked or password changed
-            throw new Exception($decoded_response->error);
+            throw new Exception($decoded_response->error->message);
         }
 
         return $decoded_response;        
@@ -221,7 +220,7 @@ class Inchoo_SocialConnect_Model_Google_Client
         $decoded_response = json_decode($response);
         
         if (isset($decoded_response->error)) {
-            throw new GOAuthException($decoded_response->error);
+            throw new Exception($decoded_response->error->message);
         }
     }
     
@@ -246,7 +245,7 @@ class Inchoo_SocialConnect_Model_Google_Client
         $decoded_response = json_decode($response);
 
         if (isset($decoded_response->error)) {
-            throw new GOAuthException($decoded_response->error);
+            throw new Exception($decoded_response->error->message);
         }
         
         $decoded_response->created = time();     
@@ -275,7 +274,7 @@ class Inchoo_SocialConnect_Model_Google_Client
 
         if(!isset($decoded_response->access_token) ||
                 !isset($decoded_response->expires_in)) {
-            throw new GOAuthException('Unable to refresh access token');
+            throw new Exception('Unable to refresh access token');
         }
 
         $this->token->access_token = $decoded_response->access_token;
@@ -318,10 +317,6 @@ class Inchoo_SocialConnect_Model_Google_Client
                 
         $response = $client->request($method);
         
-        if($response->isError()) {
-            throw new Exception('Error while making the request');            
-        }
-        
         return $response->getBody();
     }
     
@@ -346,6 +341,3 @@ class Inchoo_SocialConnect_Model_Google_Client
     }
 
 }
-
-class GOAuthException extends Exception
-{}

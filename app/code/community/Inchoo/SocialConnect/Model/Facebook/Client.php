@@ -153,12 +153,7 @@ class Inchoo_SocialConnect_Model_Facebook_Client
         $decoded_response = json_decode($response);
 
         if (isset($decoded_response->error)) {
-            // Token expired, permissions revoked or password changed
-            if ($decoded_response->error->type == 'OAuthException') {
-                throw new FOAuthException($decoded_response->error->message);
-            } else {
-                throw new Exception($decoded_response->error->message);
-            }
+            throw new Exception($decoded_response->error->message);
         }
 
         return $decoded_response;        
@@ -198,11 +193,7 @@ class Inchoo_SocialConnect_Model_Facebook_Client
         }
 
         if (isset($decoded_response->error)) {
-            if ($decoded_response->error->type == 'OAuthException') {
-                throw new FOAuthException($decoded_response->error->message);
-            } else {
-                throw new Exception($decoded_response->error->message);   
-            }
+            throw new Exception($decoded_response->error->message);
         }
 
         $this->token = $decoded_response;
@@ -233,10 +224,6 @@ class Inchoo_SocialConnect_Model_Facebook_Client
                 
         $response = $client->request($method);
         
-        if($response->isError()) {
-            throw new Exception('Error while making the request');            
-        }
-        
         return $response->getBody();
     }    
 
@@ -261,6 +248,3 @@ class Inchoo_SocialConnect_Model_Facebook_Client
     }
 
 }
-
-class FOAuthException extends Exception
-{}

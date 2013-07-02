@@ -60,17 +60,7 @@ class Inchoo_SocialConnect_Model_Google_Userinfo
                 $customer->setInchooSocialconnectGtoken($this->client->getAccessToken());
                 $customer->save();
 
-            } catch(GOAuthException $e) {
-                /* Token expired (shouldn't happen due to access type 'offline',
-                 * google client refreshes token automatically),permissions revoked
-                 * or password changed */
-                $helper->disconnect($customer);
-                Mage::getSingleton('core/session')
-                    ->addNotice('Permission expired or account password changed.
-                        You can restore permissions by connecting your Google
-                        account again.');
             } catch(Exception $e) {
-                // General exception
                 $helper->disconnect($customer);
                 Mage::getSingleton('core/session')->addError($e->getMessage());
             }
