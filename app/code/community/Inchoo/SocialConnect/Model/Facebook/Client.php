@@ -211,6 +211,11 @@ class Inchoo_SocialConnect_Model_Facebook_Client
     protected function _httpRequest($url, $method = 'GET', $params = array())
     {
         $client = new Zend_Http_Client($url);
+        $client->setConfig(
+            array(
+                'timeout' => 60
+            )
+        );        
         
         switch ($method) {
             case 'GET':
