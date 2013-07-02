@@ -60,6 +60,9 @@ class Inchoo_SocialConnect_Model_Google_Userinfo
                 $customer->setInchooSocialconnectGtoken($this->client->getAccessToken());
                 $customer->save();
 
+            } catch(GoogleOAuthException $e) {
+                $helper->disconnect($customer);
+                Mage::getSingleton('core/session')->addNotice($e->getMessage());
             } catch(Exception $e) {
                 $helper->disconnect($customer);
                 Mage::getSingleton('core/session')->addError($e->getMessage());

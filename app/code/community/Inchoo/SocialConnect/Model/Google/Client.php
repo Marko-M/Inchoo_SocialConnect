@@ -58,7 +58,7 @@ class Inchoo_SocialConnect_Model_Google_Client
 
     protected $token = null;
 
-    public function __construct($params = array()) 
+    public function __construct($params = array())
     {
         if(($this->isEnabled = $this->_isEnabled())) {
             $this->clientId = $this->_getClientId();
@@ -84,12 +84,12 @@ class Inchoo_SocialConnect_Model_Google_Client
             }
         }
     }
-    
+
     public function isEnabled()
     {
         return (bool) $this->isEnabled;
     }
-    
+
     public function getClientId()
     {
         return $this->clientId;
@@ -153,7 +153,7 @@ class Inchoo_SocialConnect_Model_Google_Client
 
         return json_encode($this->token);
     }
-    
+
     public function createAuthUrl()
     {
         $url =
@@ -170,7 +170,7 @@ class Inchoo_SocialConnect_Model_Google_Client
                     )
             );
         return $url;
-    }    
+    }
 
     public function api($endpoint, $method = 'GET', $params = array())
     {
@@ -179,57 +179,54 @@ class Inchoo_SocialConnect_Model_Google_Client
         } else if($this->isAccessTokenExpired()) {
             $this->refreshAccessToken();
         }
-        
+
         $url = self::OAUTH2_SERVICE_URI.$endpoint;
-        
+
         $method = strtoupper($method);
-        
+
         $params = array_merge(array(
             'access_token' => $this->token->access_token
         ), $params);
-        
+
         $response = $this->_httpRequest($url, $method, $params);
-        
-        $decoded_response = json_decode($response);
 
-        if (isset($decoded_response->error)) {
-            throw new Exception($decoded_response->error->message);
-        }
-
-        return $decoded_response;        
+        return $response;
     }
-    
+
     public function revokeToken()
     {
         if(empty($this->token)) {
-            throw new Exception('No access token available');
+            throw new Exception(
+                Mage::helper('inchoo_socialconnect')
+                    ->__('No access token available')
+            );
         }
 
         if(empty($this->token->refresh_token)) {
-            throw new Exception('No refresh token, nothing to revoke');
-        }        
+            throw new Exception(
+                Mage::helper('inchoo_socialconnect')
+                    ->__('No refresh token, nothing to revoke')
+            );
+        }
 
-        $response = $this->_httpRequest(
+        $this->_httpRequest(
             self::OAUTH2_REVOKE_URI,
             'POST',
            array(
                'token' => $this->token->refresh_token
            )
-        );      
-        
-        $decoded_response = json_decode($response);
-        
-        if (isset($decoded_response->error)) {
-            throw new Exception($decoded_response->error->message);
-        }
+        );
     }
-    
+
     protected function fetchAccessToken()
     {
         if(empty($_REQUEST['code'])) {
-            throw new Exception('Unable to retrieve access code');
+            throw new Exception(
+                Mage::helper('inchoo_socialconnect')
+                    ->__('Unable to retrieve access code')
+            );
         }
-        
+
         $response = $this->_httpRequest(
             self::OAUTH2_TOKEN_URI,
             'POST',
@@ -240,25 +237,22 @@ class Inchoo_SocialConnect_Model_Google_Client
                 'client_secret' => $this->clientSecret,
                 'grant_type' => 'authorization_code'
             )
-        );        
-        
-        $decoded_response = json_decode($response);
+        );
 
-        if (isset($decoded_response->error)) {
-            throw new Exception($decoded_response->error->message);
-        }
-        
-        $decoded_response->created = time();     
+        $response->created = time();
 
-        $this->token = $decoded_response;
+        $this->token = $response;
     }
-    
+
     protected function refreshAccessToken()
     {
         if(empty($this->token->refresh_token)) {
-            throw new Exception('No refresh token, unable to refresh access token');
+            throw new Exception(
+                Mage::helper('inchoo_socialconnect')
+                    ->__('No refresh token available, unable to refresh access token')
+            );
         }
-        
+
         $response = $this->_httpRequest(
             self::OAUTH2_TOKEN_URI,
             'POST',
@@ -266,22 +260,15 @@ class Inchoo_SocialConnect_Model_Google_Client
                 'client_id' => $this->clientId,
                 'client_secret' => $this->clientSecret,
                 'refresh_token' => $this->token->refresh_token,
-                'grant_type' => 'refresh_token'        
+                'grant_type' => 'refresh_token'
             )
-        );        
-        
-        $decoded_response = json_decode($response);
+        );
 
-        if(!isset($decoded_response->access_token) ||
-                !isset($decoded_response->expires_in)) {
-            throw new Exception('Unable to refresh access token');
-        }
-
-        $this->token->access_token = $decoded_response->access_token;
-        $this->token->expires_in = $decoded_response->expires_in;
+        $this->token->access_token = $response->access_token;
+        $this->token->expires_in = $response->expires_in;
         $this->token->created = time();
-    }    
-    
+    }
+
     protected function isAccessTokenExpired() {
         if(empty($this->token)) {
             return true;
@@ -291,17 +278,12 @@ class Inchoo_SocialConnect_Model_Google_Client
         $expired = ($this->token->created + ($this->token->expires_in - 30)) < time();
 
         return $expired;
-    }  
-    
+    }
+
     protected function _httpRequest($url, $method = 'GET', $params = array())
     {
-        $client = new Zend_Http_Client($url);
-        $client->setConfig(
-            array(
-                'timeout' => 60
-            )
-        );        
-        
+        $client = new Zend_Http_Client($url, array('timeout' => 60));
+
         switch ($method) {
             case 'GET':
                 $client->setParameterGet($params);
@@ -310,20 +292,49 @@ class Inchoo_SocialConnect_Model_Google_Client
                 $client->setParameterPost($params);
                 break;
             case 'DELETE':
-                break;  
+                break;
             default:
-                throw new Exception('No supported HTTP method');            
-        }   
-                
+                throw new Exception(
+                    Mage::helper('inchoo_socialconnect')
+                        ->__('Required HTTP method is not supported')
+                );
+        }
+
         $response = $client->request($method);
-        
-        return $response->getBody();
+
+        Mage::log($response->getStatus().' - '. $response->getBody());
+
+        $decoded_response = json_decode($response->getBody());
+
+        if($response->isError()) {
+            $status = $response->getStatus();
+            if(($status == 400 || $status == 401)) {
+                if(isset($decoded_response->error->message)) {
+                    $message = $decoded_response->error->message;
+                } else {
+                    $message = Mage::helper('inchoo_socialconnect')
+                        ->__('Unspecified OAuth error occured');
+                }
+
+                throw new GoogleOAuthException($message);
+            } else {
+                $message = sprintf(
+                    Mage::helper('inchoo_socialconnect')
+                        ->__('HTTP error %d occured while issuing request'),
+                    $status
+                );
+
+                throw new Exception($message);
+            }
+        }
+
+        return $decoded_response;
     }
-    
+
     protected function _isEnabled()
     {
         return $this->_getStoreConfig(self::XML_PATH_ENABLED);
-    }    
+    }
 
     protected function _getClientId()
     {
@@ -341,3 +352,6 @@ class Inchoo_SocialConnect_Model_Google_Client
     }
 
 }
+
+class GoogleOAuthException extends Exception
+{}

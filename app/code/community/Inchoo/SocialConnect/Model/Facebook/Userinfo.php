@@ -61,6 +61,9 @@ class Inchoo_SocialConnect_Model_Facebook_Userinfo
                     )
                 );
 
+            } catch(FacebookOAuthException $e) {
+                $helper->disconnect($customer);
+                Mage::getSingleton('core/session')->addNotice($e->getMessage());
             } catch(Exception $e) {
                 $helper->disconnect($customer);
                 Mage::getSingleton('core/session')->addError($e->getMessage());
