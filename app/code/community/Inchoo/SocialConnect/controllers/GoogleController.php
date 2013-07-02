@@ -172,12 +172,13 @@ class Inchoo_SocialConnect_GoogleController extends Mage_Core_Controller_Front_A
                 return;
             }
 
-            $customer = Mage::getModel('customer/customer')
-                    ->setWebsiteId(Mage::app()->getWebsite()->getId())
-                    ->loadByEmail($userInfo->email);
+            $customersByEmail = Mage::helper('inchoo_socialconnect/facebook')
+                ->getCustomersByEmail($userInfo->email);
 
-            if($customer->getId())  {
+            if($customersByEmail->count())  {
                 // Email account already exists - attach, login
+                $customer = $customersByEmail->getFirstItem();
+                
                 Mage::helper('inchoo_socialconnect/google')->connectByGoogleId(
                     $customer,
                     $userInfo->id,
@@ -209,7 +210,6 @@ class Inchoo_SocialConnect_GoogleController extends Mage_Core_Controller_Front_A
             }
 
             Mage::helper('inchoo_socialconnect/google')->connectByCreatingAccount(
-                $customer,
                 $userInfo->email,
                 $userInfo->given_name,
                 $userInfo->family_name,

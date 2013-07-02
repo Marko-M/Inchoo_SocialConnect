@@ -60,28 +60,29 @@ class Inchoo_SocialConnect_Helper_Facebook extends Mage_Core_Helper_Abstract
     }
     
     public function connectByCreatingAccount(
-            Mage_Customer_Model_Customer $customer,
             $email,
             $firstName,
             $lastName,
             $facebookId,
             $token)
     {
-            $customer->setEmail($email)
-                    ->setFirstname($firstName)
-                    ->setLastname($lastName)
-                    ->setInchooSocialconnectFid($facebookId)
-                    ->setInchooSocialconnectFtoken($token)
-                    ->setPassword($customer->generatePassword(10))
-                    ->save();
+        $customer = Mage::getModel('customer/customer');
 
-            $customer->setConfirmation(null);
-            $customer->save();
+        $customer->setEmail($email)
+                ->setFirstname($firstName)
+                ->setLastname($lastName)
+                ->setInchooSocialconnectFid($facebookId)
+                ->setInchooSocialconnectFtoken($token)
+                ->setPassword($customer->generatePassword(10))
+                ->save();
 
-            $customer->sendNewAccountEmail();
-            
-            Mage::getSingleton('customer/session')->setCustomerAsLoggedIn($customer);            
-        
+        $customer->setConfirmation(null);
+        $customer->save();
+
+        $customer->sendNewAccountEmail();
+
+        Mage::getSingleton('customer/session')->setCustomerAsLoggedIn($customer);            
+
     }
     
     public function loginByCustomer(Mage_Customer_Model_Customer $customer)
@@ -110,17 +111,40 @@ class Inchoo_SocialConnect_Helper_Facebook extends Mage_Core_Helper_Abstract
         }
 
         if(Mage::getSingleton('customer/session')->isLoggedIn()) {
-            if(Mage::getSingleton('customer/session')->isLoggedIn()) {
-                $collection->addFieldToFilter(
-                    'entity_id',
-                    array('neq' => Mage::getSingleton('customer/session')->getCustomerId())
-                );
-            }
+            $collection->addFieldToFilter(
+                'entity_id',
+                array('neq' => Mage::getSingleton('customer/session')->getCustomerId())
+            );
         }
 
         return $collection;
     }
     
+    public function getCustomersByEmail($email)
+    {
+        $customer = Mage::getModel('customer/customer');
+
+        $collection = $customer->getCollection()
+                ->addFieldToFilter('email', $email)
+                ->setPageSize(1);
+
+        if($customer->getSharingConfig()->isWebsiteScope()) {
+            $collection->addAttributeToFilter(
+                'website_id',
+                Mage::app()->getWebsite()->getId()
+            );
+        }  
+        
+        if(Mage::getSingleton('customer/session')->isLoggedIn()) {
+            $collection->addFieldToFilter(
+                'entity_id',
+                array('neq' => Mage::getSingleton('customer/session')->getCustomerId())
+            );
+        }        
+        
+        return $collection;
+    }
+
     public function getProperDimensionsPictureUrl($facebookId, $pictureUrl)
     {
         $url = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_MEDIA)
