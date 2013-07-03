@@ -244,7 +244,7 @@ class Inchoo_SocialConnect_Model_Google_Client
         if(empty($response->refresh_token)) {
             throw new Exception(
                 Mage::helper('inchoo_socialconnect')
-                    ->__('No refresh token received, aborting...')
+                    ->__('No refresh token received')
             );
         }        
 
