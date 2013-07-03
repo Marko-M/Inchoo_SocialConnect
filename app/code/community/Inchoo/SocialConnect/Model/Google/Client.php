@@ -272,10 +272,6 @@ class Inchoo_SocialConnect_Model_Google_Client
     }
 
     protected function isAccessTokenExpired() {
-        if(empty($this->token)) {
-            return true;
-        }
-
         // If the token is set to expire in the next 30 seconds.
         $expired = ($this->token->created + ($this->token->expires_in - 30)) < time();
 
