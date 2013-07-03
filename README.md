@@ -9,5 +9,3 @@ Inchoo_SocialConnect is a Magento extension allowing your customers to login or 
 * Authorized JavaScript Origins
  * Google: http://www.example.com
  * Facebook: http://www.example.com
-
-**This code is feature complete but hasn't received much testing. Shake well before use.**
