@@ -149,6 +149,8 @@ class Inchoo_SocialConnect_Model_Google_Client
     {
         if(empty($this->token)) {
             $this->fetchAccessToken();
+        } else if($this->isAccessTokenExpired()) {
+            $this->refreshAccessToken();
         }
 
         return json_encode($this->token);
