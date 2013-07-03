@@ -42,6 +42,20 @@ class Inchoo_SocialConnect_Helper_Facebook extends Mage_Core_Helper_Abstract
             $client->api('/me/permissions', 'DELETE');            
         } catch (Exception $e) { }
         
+        $pictureFilename = Mage::getBaseDir(Mage_Core_Model_Store::URL_TYPE_MEDIA)
+                .DS
+                .'inchoo'
+                .DS
+                .'socialconnect'
+                .DS
+                .'facebook'
+                .DS                
+                .$customer->getInchooSocialconnectFid();
+        
+        if(file_exists($pictureFilename)) {
+            @unlink($pictureFilename);
+        }        
+        
         $customer->setInchooSocialconnectFid(null)
         ->setInchooSocialconnectFtoken(null)
         ->save();   
