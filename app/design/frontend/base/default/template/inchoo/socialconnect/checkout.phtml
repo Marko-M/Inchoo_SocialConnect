@@ -36,14 +36,14 @@
         <?php if($this->_googleEnabled()): ?>
         <div class="col-1">
             <h3><?php echo $this->__('Google Connect') ?></h3>
-            <p><?php echo $this->__('You can login using your Google credentials.') ?></p>
+            <p><?php echo $this->__('You can login or register using your Google credentials.') ?></p>
             <?php echo $this->getChildHtml('inchoo_socialconnect_checkout_google_button')?>
         </div>
         <?php endif; ?>
         <?php if($this->_facebookEnabled()): ?>
         <div class="col-2">
             <h3><?php echo $this->__('Facebook Connect') ?></h3>
-            <p><?php echo $this->__('You can login using your Facebook credentials.') ?></p>
+            <p><?php echo $this->__('You can login or register using your Facebook credentials.') ?></p>
             <?php echo $this->getChildHtml('inchoo_socialconnect_checkout_facebook_button')?>
         </div>
         <?php endif; ?>
