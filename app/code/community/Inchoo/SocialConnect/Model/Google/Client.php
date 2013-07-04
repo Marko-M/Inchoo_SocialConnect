@@ -239,14 +239,7 @@ class Inchoo_SocialConnect_Model_Google_Client
                 'client_secret' => $this->clientSecret,
                 'grant_type' => 'authorization_code'
             )
-        );
-        
-        if(empty($response->refresh_token)) {
-            throw new Exception(
-                Mage::helper('inchoo_socialconnect')
-                    ->__('No refresh token received')
-            );
-        }        
+        ); 
 
         $response->created = time();
 
