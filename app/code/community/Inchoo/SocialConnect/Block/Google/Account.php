@@ -44,7 +44,7 @@ class Inchoo_SocialConnect_Block_Google_Account extends Mage_Core_Block_Template
             return;
         }
 
-        $this->userInfo = Mage::registry('inchoo_socialconnect_userinfo');
+        $this->userInfo = Mage::registry('inchoo_socialconnect_google_userinfo');
 
         $this->setTemplate('inchoo/socialconnect/google/account.phtml');
 

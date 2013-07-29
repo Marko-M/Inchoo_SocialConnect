@@ -34,6 +34,35 @@
 $installer = $this;
 $installer->startSetup();
 
+$installer->setCustomerAttributes(
+    array(
+        'inchoo_socialconnect_gid' => array(
+            'type' => 'text',
+            'visible' => false,
+            'required' => false,
+            'user_defined' => false                
+        ),            
+        'inchoo_socialconnect_gtoken' => array(
+            'type' => 'text',
+            'visible' => false,
+            'required' => false,
+            'user_defined' => false                
+        ),
+        'inchoo_socialconnect_fid' => array(
+            'type' => 'text',
+            'visible' => false,
+            'required' => false,
+            'user_defined' => false                
+        ),            
+        'inchoo_socialconnect_ftoken' => array(
+            'type' => 'text',
+            'visible' => false,
+            'required' => false,
+            'user_defined' => false                
+        )            
+    )
+);
+
 // Install our custom attributes
 $installer->installCustomerAttributes();
 

@@ -33,12 +33,12 @@
 ?>
 <div class="inchoo-socialconnect-login">
     <div class="account-login">
-        <div class="col2-set">
+        <div class="col3-set">
             <?php if($this->_googleEnabled()): ?>
             <div class="col-1 new-users">
                 <div class="content">
                     <h2><?php echo $this->__('Google Connect'); ?></h2>
-                    <p><?php echo $this->__('You can login or register using your <strong>Google</strong> credentials.'); ?></p>
+                    <p><?php echo $this->__('You can login using your Google account.'); ?></p>
                 </div>
             </div>
             <?php endif; ?>
@@ -46,12 +46,20 @@
             <div class="col-2 new-users">
                 <div class="content">
                     <h2><?php echo $this->__('Facebook Connect'); ?></h2>
-                    <p><?php echo $this->__('You can login or register using your <strong>Facebook</strong> credentials.'); ?></p>
+                    <p><?php echo $this->__('You can login using your Facebook account.'); ?></p>
                 </div>
-            </div>   
+            </div>
+            <?php endif; ?>
+            <?php if($this->_twitterEnabled()): ?>
+            <div class="col-3 new-users">
+                <div class="content">
+                    <h2><?php echo $this->__('Twitter Connect'); ?></h2>
+                    <p><?php echo $this->__('You can login using your Twitter account.'); ?></p>
+                </div>
+            </div>
             <?php endif; ?>
         </div>
-        <div class="col2-set">
+        <div class="col3-set">
             <?php if($this->_googleEnabled()): ?>
             <div class="col-1">
                 <div class="buttons-set">
@@ -64,8 +72,15 @@
                 <div class="buttons-set">
                     <?php echo $this->getChildHtml('inchoo_socialconnect_facebook_login_button'); ?>
                 </div>
-            </div>         
+            </div>
+            <?php endif; ?>
+            <?php if($this->_twitterEnabled()): ?>
+            <div class="col-3">
+                <div class="buttons-set">
+                    <?php echo $this->getChildHtml('inchoo_socialconnect_twitter_login_button'); ?>
+                </div>
+            </div>
             <?php endif; ?>
         </div>
-    </div>    
+    </div>
 </div>

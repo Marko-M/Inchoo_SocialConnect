@@ -45,25 +45,27 @@ class Inchoo_SocialConnect_Block_Facebook_Button extends Mage_Core_Block_Templat
             return;
         }
 
-        $this->userInfo = Mage::registry('inchoo_socialconnect_userinfo');
+        $this->userInfo = Mage::registry('inchoo_socialconnect_facebook_userinfo');
 
-        $state = Mage::helper('core/url')->getCurrentUrl();
+        $redirect = Mage::helper('core/url')->getCurrentUrl();
 
         /* Mage::getSingleton('customer/session')->getBeforeAuthUrl(true)
          * returns value only on first call, we have multiple buttons so must 
          * use registry
          */
         if(($referer = Mage::registry('inchoo_social_connect_before_auth'))) {
-            $state = $referer;
+            $redirect = $referer;
         } else if(($referer = Mage::getSingleton('customer/session')->getBeforeAuthUrl(true))) {
             Mage::register('inchoo_social_connect_before_auth', $referer);
-            $state = $referer;            
+            $redirect = $referer;            
         }
         
-        // CSRF protection + redirect uri
+        // CSRF protection
         Mage::getSingleton('core/session')->setFacebookCsrf($csrf = md5(uniqid(rand(), TRUE)));
-
-        $this->client->setState(serialize(array($csrf, $state)));
+        $this->client->setState($csrf);
+        
+        // Redirect uri
+        Mage::getSingleton('core/session')->setFacebookRedirect($redirect);        
 
         $this->setTemplate('inchoo/socialconnect/facebook/button.phtml');
     }
@@ -80,10 +82,14 @@ class Inchoo_SocialConnect_Block_Facebook_Button extends Mage_Core_Block_Templat
     protected function _getButtonText()
     {
         if(empty($this->userInfo)) {
-            return $this->__('Connect');
+            if(!($text = Mage::registry('inchoo_socialconnect_button_text'))){
+                $text = $this->__('Connect');
+            }
         } else {
-            return $this->__('Disconnect');
+            $text = $this->__('Disconnect');
         }
+        
+        return $text;
     }
 
 }

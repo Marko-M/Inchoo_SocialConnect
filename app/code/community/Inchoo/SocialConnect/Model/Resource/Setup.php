@@ -33,16 +33,23 @@
 
 class Inchoo_SocialConnect_Model_Resource_Setup extends Mage_Eav_Model_Entity_Setup
 {
+    protected $_customerAttributes = array();
+
+    public function setCustomerAttributes($customerAttributes)
+    {
+        $this->_customerAttributes = $customerAttributes;
+
+        return $this;
+    }
+    
    /**
      * Add our custom attributes
      *
      * @return Mage_Eav_Model_Entity_Setup
      */
     public function installCustomerAttributes()
-    {
-        $attributes = $this->_getCustomerAttributes();      
-        
-        foreach ($attributes as $code => $attr) {
+    {        
+        foreach ($this->_customerAttributes as $code => $attr) {
             $this->addAttribute('customer', $code, $attr);
         }
 
@@ -56,48 +63,10 @@ class Inchoo_SocialConnect_Model_Resource_Setup extends Mage_Eav_Model_Entity_Se
      */
     public function removeCustomerAttributes()
     {
-        $attributes = $this->_getCustomerAttributes();
-
-        foreach ($attributes as $code => $attr) {
+        foreach ($this->_customerAttributes as $code => $attr) {
             $this->removeAttribute('customer', $code);
         }
 
         return $this;
-    }
-
-    /**
-     * Returns entities array to be used by
-     * Mage_Eav_Model_Entity_Setup::installEntities()
-     *
-     * @return array Custom entities
-     */
-    protected function _getCustomerAttributes()
-    {
-        return array(
-            'inchoo_socialconnect_gid' => array(
-                'type' => 'text',
-                'visible' => false,
-                'required' => false,
-                'user_defined' => false                
-            ),            
-            'inchoo_socialconnect_gtoken' => array(
-                'type' => 'text',
-                'visible' => false,
-                'required' => false,
-                'user_defined' => false                
-            ),
-            'inchoo_socialconnect_fid' => array(
-                'type' => 'text',
-                'visible' => false,
-                'required' => false,
-                'user_defined' => false                
-            ),            
-            'inchoo_socialconnect_ftoken' => array(
-                'type' => 'text',
-                'visible' => false,
-                'required' => false,
-                'user_defined' => false                
-            )            
-        );
-    }    
+    }  
 }

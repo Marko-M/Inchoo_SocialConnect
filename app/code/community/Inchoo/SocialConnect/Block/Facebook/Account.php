@@ -44,7 +44,7 @@ class Inchoo_SocialConnect_Block_Facebook_Account extends Mage_Core_Block_Templa
             return;
         }
 
-        $this->userInfo = Mage::registry('inchoo_socialconnect_userinfo');
+        $this->userInfo = Mage::registry('inchoo_socialconnect_facebook_userinfo');
 
         $this->setTemplate('inchoo/socialconnect/facebook/account.phtml');
     }

@@ -30,24 +30,25 @@
 * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
 */
 
-div.inchoo-socialconnect-facebook {
+div.inchoo-socialconnect-facebook{
     float: right;
-    height: 24px !important;
+    height: 30px !important;
     background: transparent url('../images/login-button-left.png') no-repeat top left !important;
 }
 
 div.inchoo-socialconnect-facebook-inner{
-    height: 24px !important;
+    height: 30px !important;
     float: left !important;
-    margin-left: 36px !important;
+    margin-left: 30px !important;
     background: transparent url('../images/login-button-inner.png') repeat-x top left !important;
     padding: 0 5px !important;
+    text-shadow: 1px 1px #1c376d;
 }
 
 div.inchoo-socialconnect-facebook-right{
     float: left !important;
-    height: 24px !important;
-    width: 2px !important;
+    height: 30px !important;
+    width: 3px !important;
     background: transparent url('../images/login-button-right.png') no-repeat top left !important;
 }
 
@@ -56,5 +57,5 @@ div.inchoo-socialconnect-facebook-inner a{
     padding: 0 !important;
     margin: 0 !important;
     text-decoration: none !important;
-    line-height: 24px !important;
-}    
+    line-height: 30px !important;
+}      

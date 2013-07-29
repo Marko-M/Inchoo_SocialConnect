@@ -52,7 +52,7 @@ class Inchoo_SocialConnect_AccountController extends Mage_Core_Controller_Front_
         $userInfo = Mage::getSingleton('inchoo_socialconnect/google_userinfo')
                 ->getUserInfo();
         
-        Mage::register('inchoo_socialconnect_userinfo', $userInfo);
+        Mage::register('inchoo_socialconnect_google_userinfo', $userInfo);
         
         $this->loadLayout();
         $this->renderLayout();
@@ -63,7 +63,24 @@ class Inchoo_SocialConnect_AccountController extends Mage_Core_Controller_Front_
         $userInfo = Mage::getSingleton('inchoo_socialconnect/facebook_userinfo')
             ->getUserInfo();
         
-        Mage::register('inchoo_socialconnect_userinfo', $userInfo);
+        Mage::register('inchoo_socialconnect_facebook_userinfo', $userInfo);
+        
+        $this->loadLayout();
+        $this->renderLayout();
+    }    
+    
+    public function twitterAction()
+    {        
+        // Cache user info inside customer session due to Twitter window frame rate limits
+        if(!($userInfo = Mage::getSingleton('customer/session')
+                ->getInchooSocialconnectTwitterUserinfo())) {
+            $userInfo = Mage::getSingleton('inchoo_socialconnect/twitter_userinfo')
+                ->getUserInfo();
+            
+            Mage::getSingleton('customer/session')->setInchooSocialconnectTwitterUserinfo($userInfo);
+        }
+        
+        Mage::register('inchoo_socialconnect_twitter_userinfo', $userInfo);
         
         $this->loadLayout();
         $this->renderLayout();

@@ -33,19 +33,16 @@
 ?>
 <div class="inchoo-socialconnect-account">
     <div class="page-title">
-        <h1><?php echo $this->__('Facebook Connect') ?></h1>
+        <h1><?php echo $this->__('Twitter Connect') ?></h1>
     </div>
 
     <?php if($this->_hasUserInfo()): ?>
 
     <?php
-        $googleId = $this->_getFacebookId();
+        $twitterId = $this->_getTwitterId();
         $status = $this->_getStatus();
-        $email = $this->_getEmail();
-        $name = $this->_getName();
         $picture = $this->_getPicture();
-        $gender = $this->_getGender();
-        $birthday = $this->_getBirthday();
+        $name = $this->_getName();
     ?>
 
     <div class="col3-set">
@@ -64,29 +61,14 @@
                         <?php printf($this->__('Connected as %s', '<strong>'.$status.'</strong>')) ?>
                     </p>
                     <?php endif; ?>
-                    <?php if(!empty($email)): ?>
+                    <?php if(!empty($twitterId)): ?>
                     <p>
-                        <?php printf($this->__('Email: %s', '<strong>'.$email.'</strong>')) ?>
-                    </p>
-                    <?php endif; ?>
-                    <?php if(!empty($googleId)): ?>
-                    <p>
-                        <?php printf($this->__('Facebook #: %s', '<strong>'.$googleId.'</strong>')) ?>
-                    </p>
-                    <?php endif; ?>
-                    <?php if(!empty($gender)): ?>
-                    <p>
-                        <?php printf($this->__('Gender: %s', '<strong>'.$gender.'</strong>')) ?>
-                    </p>
-                    <?php endif; ?>
-                    <?php if(!empty($birthday)): ?>
-                    <p>
-                        <?php printf($this->__('Birthday: %s', '<strong>'.$birthday.'</strong>')) ?>
+                        <?php printf($this->__('Twitter #: %s', '<strong>'.$twitterId.'</strong>')) ?>
                     </p>
                     <?php endif; ?>
                 </div>
                 <div class="col-3">
-                    <?php echo $this->getChildHtml('inchoo_socialconnect_account_facebook_button'); ?>
+                    <?php echo $this->getChildHtml('inchoo_socialconnect_account_twitter_button'); ?>
                 </div>
             </div>
         </div>
@@ -96,11 +78,11 @@
         <div class="box-content">
             <div class="col-1">
                 <p>
-                    <?php echo $this->__('You can connect store account with your Facebook account so you could login easier in the future.') ?>
+                    <?php echo $this->__('You can connect store account with your Twitter account so you could login easier in the future.') ?>
                 </p>
             </div>
             <div class="col-2">
-                <?php echo $this->getChildHtml('inchoo_socialconnect_account_facebook_button'); ?>
+                <?php echo $this->getChildHtml('inchoo_socialconnect_account_twitter_button'); ?>
             </div>
         </div>
     </div>

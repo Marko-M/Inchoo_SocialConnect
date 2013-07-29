@@ -31,7 +31,7 @@
 * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
 */
 
-class Inchoo_SocialConnect_Model_Google_Userinfo
+class Inchoo_SocialConnect_Model_Twitter_Userinfo
 {
     protected $client = null;
     protected $userInfo = null;
@@ -40,29 +40,24 @@ class Inchoo_SocialConnect_Model_Google_Userinfo
         if(!Mage::getSingleton('customer/session')->isLoggedIn())
             return;
 
-        $this->client = Mage::getSingleton('inchoo_socialconnect/google_client');
+        $this->client = Mage::getSingleton('inchoo_socialconnect/twitter_client');
         if(!($this->client->isEnabled())) {
             return;
         }
 
         $customer = Mage::getSingleton('customer/session')->getCustomer();
-        if(($socialconnectGid = $customer->getInchooSocialconnectGid()) &&
-                ($socialconnectGtoken = $customer->getInchooSocialconnectGtoken())) {
-            $helper = Mage::helper('inchoo_socialconnect/google');
+        if(($socialconnectTid = $customer->getInchooSocialconnectTid()) &&
+                ($socialconnectTtoken = $customer->getInchooSocialconnectTtoken())) {
+            $helper = Mage::helper('inchoo_socialconnect/twitter');
 
             try{
-                $this->client->setAccessToken($socialconnectGtoken);
+                $this->client->setAccessToken($socialconnectTtoken);
+                
+                $this->userInfo = $this->client->api('/account/verify_credentials.json', 'GET', array('skip_status' => true)); 
 
-                $this->userInfo = $this->client->api('/userinfo');
-
-                /* The access token may have been updated automatically due to
-                 * access type 'offline' */
-                $customer->setInchooSocialconnectGtoken($this->client->getAccessToken());
-                $customer->save();
-
-            } catch(Inchoo_SocialConnect_GoogleOAuthException $e) {
+            }  catch (Inchoo_SocialConnect_TwitterOAuthException $e) {
                 $helper->disconnect($customer);
-                Mage::getSingleton('core/session')->addNotice($e->getMessage());
+                Mage::getSingleton('core/session')->addNotice($e->getMessage());                
             } catch(Exception $e) {
                 $helper->disconnect($customer);
                 Mage::getSingleton('core/session')->addError($e->getMessage());

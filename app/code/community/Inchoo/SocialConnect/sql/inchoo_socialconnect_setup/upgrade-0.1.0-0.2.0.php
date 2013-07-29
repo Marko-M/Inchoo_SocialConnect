@@ -1,3 +1,4 @@
+<?php
 /**
 * Inchoo
 *
@@ -30,36 +31,30 @@
 * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
 */
 
-div.inchoo-socialconnect-register,
-div.inchoo-socialconnect-checkout,
-div.inchoo-socialconnect-login {
-    margin-top: 28px;
-}
+$installer = $this;
+$installer->startSetup();
 
-div.inchoo-socialconnect-login .content {
-    min-height: 100px;
-}
+$installer->setCustomerAttributes(
+    array(
+        'inchoo_socialconnect_tid' => array(
+            'type' => 'text',
+            'visible' => false,
+            'required' => false,
+            'user_defined' => false                
+        ),            
+        'inchoo_socialconnect_ttoken' => array(
+            'type' => 'text',
+            'visible' => false,
+            'required' => false,
+            'user_defined' => false                
+        )          
+    )
+);
 
-div.inchoo-socialconnect-register .fieldset {
-    margin: 0px;
-}
+// Install our custom attributes
+$installer->installCustomerAttributes();
 
-div.inchoo-socialconnect-account .col3-set .col-1 {
-    width: 29%
-}
+// Remove our custom attributes (for testing)
+//$installer->removeCustomerAttributes();
 
-div.inchoo-socialconnect-account .col3-set .col-2 {
-    width: 49%
-}
-
-div.inchoo-socialconnect-account .col3-set .col-3 {
-    width: 19%
-}
-
-div.inchoo-socialconnect-account .col2-set .col-1 {
-    width: 79%
-}
-
-div.inchoo-socialconnect-account .col2-set .col-2 {
-    width: 19%
-}
+$installer->endSetup();

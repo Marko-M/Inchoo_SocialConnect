@@ -33,29 +33,38 @@
 
 class Inchoo_SocialConnect_Block_Checkout extends Mage_Core_Block_Template
 {
-    protected $clientGoogle = null;    
-    protected $clientFacebook = null;  
-    
+    protected $clientGoogle = null;
+    protected $clientFacebook = null;
+    protected $clientTwitter = null;
+
     protected function _construct() {
         parent::_construct();
-        
+
         $this->clientGoogle = Mage::getSingleton('inchoo_socialconnect/google_client');
         $this->clientFacebook = Mage::getSingleton('inchoo_socialconnect/facebook_client');
-        
-        if(!$this->clientGoogle && ! $this->clientFacebook)
+        $this->clientTwitter = Mage::getSingleton('inchoo_socialconnect/twitter_client');
+
+        if(!$this->clientGoogle && !$this->clientFacebook && !$this->clientTwitter)
             return;
         
+        Mage::register('inchoo_socialconnect_button_text', $this->__('Continue'));
+
         $this->setTemplate('inchoo/socialconnect/checkout.phtml');
     }
-    
+
     protected function _googleEnabled()
     {
         return (bool) $this->clientGoogle;
     }
-    
+
     protected function _facebookEnabled()
     {
         return (bool) $this->clientFacebook;
-    }    
-    
+    }
+
+    protected function _twitterEnabled()
+    {
+        return (bool) $this->clientTwitter;
+    }
+
 }

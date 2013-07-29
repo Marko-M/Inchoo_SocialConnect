@@ -31,40 +31,55 @@
 * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
 */
 
-class Inchoo_SocialConnect_Block_Login extends Mage_Core_Block_Template
+class Inchoo_SocialConnect_Block_Twitter_Account extends Mage_Core_Block_Template
 {
-    protected $clientGoogle = null;
-    protected $clientFacebook = null;
-    protected $clientTwitter = null;
+    protected $client = null;
+    protected $userInfo = null;
 
     protected function _construct() {
         parent::_construct();
 
-        $this->clientGoogle = Mage::getSingleton('inchoo_socialconnect/google_client');
-        $this->clientFacebook = Mage::getSingleton('inchoo_socialconnect/facebook_client');
-        $this->clientTwitter = Mage::getSingleton('inchoo_socialconnect/twitter_client');
-
-        if(!$this->clientGoogle && !$this->clientFacebook && !$this->clientTwitter)
+        $this->client = Mage::getSingleton('inchoo_socialconnect/twitter_client');
+        if(!($this->client->isEnabled())) {
             return;
+        }
 
-        Mage::register('inchoo_socialconnect_button_text', $this->__('Login'));
-        
-        $this->setTemplate('inchoo/socialconnect/login.phtml');
+        $this->userInfo = Mage::registry('inchoo_socialconnect_twitter_userinfo');
+
+        $this->setTemplate('inchoo/socialconnect/twitter/account.phtml');
+
     }
 
-    protected function _googleEnabled()
+    protected function _hasUserInfo()
     {
-        return (bool) $this->clientGoogle;
+        return (bool) $this->userInfo;
     }
 
-    protected function _facebookEnabled()
+    protected function _getTwitterId()
     {
-        return (bool) $this->clientFacebook;
+        return $this->userInfo->id;
     }
 
-    protected function _twitterEnabled()
+    protected function _getStatus()
     {
-        return (bool) $this->clientTwitter;
+        return '<a href="'.sprintf('https://twitter.com/%s', $this->userInfo->screen_name).'" target="_blank">'.
+                    $this->htmlEscape($this->userInfo->screen_name).'</a>';
+    }
+
+    protected function _getPicture()
+    {
+        if(!empty($this->userInfo->profile_image_url)) {
+            return Mage::helper('inchoo_socialconnect/twitter')
+                    ->getProperDimensionsPictureUrl($this->userInfo->id,
+                            $this->userInfo->profile_image_url);
+        }
+
+        return null;
+    }
+
+    protected function _getName()
+    {
+        return $this->userInfo->name;
     }
 
 }

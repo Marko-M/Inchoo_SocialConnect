@@ -200,14 +200,14 @@ class Inchoo_SocialConnect_Model_Google_Client
         if(empty($this->token)) {
             throw new Exception(
                 Mage::helper('inchoo_socialconnect')
-                    ->__('No access token available')
+                    ->__('No access token available.')
             );
         }
 
         if(empty($this->token->refresh_token)) {
             throw new Exception(
                 Mage::helper('inchoo_socialconnect')
-                    ->__('No refresh token, nothing to revoke')
+                    ->__('No refresh token, nothing to revoke.')
             );
         }
 
@@ -225,7 +225,7 @@ class Inchoo_SocialConnect_Model_Google_Client
         if(empty($_REQUEST['code'])) {
             throw new Exception(
                 Mage::helper('inchoo_socialconnect')
-                    ->__('Unable to retrieve access code')
+                    ->__('Unable to retrieve access code.')
             );
         }
 
@@ -251,7 +251,7 @@ class Inchoo_SocialConnect_Model_Google_Client
         if(empty($this->token->refresh_token)) {
             throw new Exception(
                 Mage::helper('inchoo_socialconnect')
-                    ->__('No refresh token available, unable to refresh access token')
+                    ->__('No refresh token, unable to refresh access token.')
             );
         }
 
@@ -294,7 +294,7 @@ class Inchoo_SocialConnect_Model_Google_Client
             default:
                 throw new Exception(
                     Mage::helper('inchoo_socialconnect')
-                        ->__('Required HTTP method is not supported')
+                        ->__('Required HTTP method is not supported.')
                 );
         }
 
@@ -311,14 +311,14 @@ class Inchoo_SocialConnect_Model_Google_Client
                     $message = $decoded_response->error->message;
                 } else {
                     $message = Mage::helper('inchoo_socialconnect')
-                        ->__('Unspecified OAuth error occured');
+                        ->__('Unspecified OAuth error occurred.');
                 }
 
-                throw new GoogleOAuthException($message);
+                throw new Inchoo_SocialConnect_GoogleOAuthException($message);
             } else {
                 $message = sprintf(
                     Mage::helper('inchoo_socialconnect')
-                        ->__('HTTP error %d occured while issuing request'),
+                        ->__('HTTP error %d occurred while issuing request.'),
                     $status
                 );
 
@@ -351,5 +351,5 @@ class Inchoo_SocialConnect_Model_Google_Client
 
 }
 
-class GoogleOAuthException extends Exception
+class Inchoo_SocialConnect_GoogleOAuthException extends Exception
 {}

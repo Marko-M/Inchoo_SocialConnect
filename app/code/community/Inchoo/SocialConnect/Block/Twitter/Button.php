@@ -31,21 +31,20 @@
 * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
 */
 
-class Inchoo_SocialConnect_Block_Google_Button extends Mage_Core_Block_Template
+class Inchoo_SocialConnect_Block_Twitter_Button extends Mage_Core_Block_Template
 {
     protected $client = null;
-    protected $oauth2 = null;
     protected $userInfo = null;
 
     protected function _construct() {
         parent::_construct();
 
-        $this->client = Mage::getSingleton('inchoo_socialconnect/google_client');
+        $this->client = Mage::getSingleton('inchoo_socialconnect/twitter_client');
         if(!($this->client->isEnabled())) {
             return;
         }
 
-        $this->userInfo = Mage::registry('inchoo_socialconnect_google_userinfo');
+        $this->userInfo = Mage::registry('inchoo_socialconnect_twitter_userinfo');
 
         $redirect = Mage::helper('core/url')->getCurrentUrl();
         
@@ -60,14 +59,11 @@ class Inchoo_SocialConnect_Block_Google_Button extends Mage_Core_Block_Template
             $redirect = $referer;            
         }
 
-        // CSRF protection
-        Mage::getSingleton('core/session')->setGoogleCsrf($csrf = md5(uniqid(rand(), TRUE)));
-        $this->client->setState($csrf);
-        
         // Redirect uri
-        Mage::getSingleton('core/session')->setGoogleRedirect($redirect);        
+        Mage::getSingleton('core/session')->setTwitterRedirect($redirect);
 
-        $this->setTemplate('inchoo/socialconnect/google/button.phtml');
+
+        $this->setTemplate('inchoo/socialconnect/twitter/button.phtml');
     }
 
     protected function _getButtonUrl()
@@ -75,7 +71,7 @@ class Inchoo_SocialConnect_Block_Google_Button extends Mage_Core_Block_Template
         if(empty($this->userInfo)) {
             return $this->client->createAuthUrl();
         } else {
-            return $this->getUrl('socialconnect/google/disconnect');
+            return $this->getUrl('socialconnect/twitter/disconnect');
         }
     }
 

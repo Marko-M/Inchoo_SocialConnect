@@ -37,21 +37,21 @@ class Inchoo_SocialConnect_FacebookController extends Mage_Core_Controller_Front
 
     public function connectAction()
     {
-        $this->referer = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB);
-
         try {
             $this->_connectCallback();
         } catch (Exception $e) {
             Mage::getSingleton('core/session')->addError($e->getMessage());
         }
 
-        $this->_redirectUrl(urldecode($this->referer));
+        if(!empty($this->referer)) {
+            $this->_redirectUrl($this->referer);
+        } else {
+            Mage::helper('inchoo_socialconnect')->redirect404($this);
+        }
     }
 
     public function disconnectAction()
     {
-        $this->referer = Mage::getUrl('socialconnect/account/facebook');
-
         $customer = Mage::getSingleton('customer/session')->getCustomer();
 
         try {
@@ -60,16 +60,21 @@ class Inchoo_SocialConnect_FacebookController extends Mage_Core_Controller_Front
             Mage::getSingleton('core/session')->addError($e->getMessage());
         }
 
-        $this->_redirectUrl($this->referer);
+        if(!empty($this->referer)) {
+            $this->_redirectUrl($this->referer);
+        } else {
+            Mage::helper('inchoo_socialconnect')->redirect404($this);
+        }
     }
 
     protected function _disconnectCallback(Mage_Customer_Model_Customer $customer) {
+        $this->referer = Mage::getUrl('socialconnect/account/facebook');  
+        
         Mage::helper('inchoo_socialconnect/facebook')->disconnect($customer);
 
         Mage::getSingleton('core/session')
             ->addSuccess(
-                $this->__('You have successfully disconnected your Facebook account
-                    from our store account.')
+                $this->__('You have successfully disconnected your Facebook account from our store account.')
             );
     }
 
@@ -82,16 +87,11 @@ class Inchoo_SocialConnect_FacebookController extends Mage_Core_Controller_Front
             return;
         }
         
-        if($state) {
-            // CSRF protection + redirect uri
-            $state = unserialize($state);
-            if( !$state ||
-                count($state) < 2 ||
-                $state[0] != Mage::getSingleton('core/session')->getFacebookCsrf()) {
-                return;
-            }
+        $this->referer = Mage::getSingleton('core/session')
+            ->getFacebookRedirect();
 
-            $this->referer = $state[1];            
+        if(!$state || $state != Mage::getSingleton('core/session')->getFacebookCsrf()) {
+            return;
         }
 
         if($errorCode) {
@@ -131,8 +131,7 @@ class Inchoo_SocialConnect_FacebookController extends Mage_Core_Controller_Front
                     // Facebook account already connected to other account - deny
                     Mage::getSingleton('core/session')
                         ->addNotice(
-                            $this->__('Your Facebook account is already connected
-                                to one of our store accounts.')
+                            $this->__('Your Facebook account is already connected to one of our store accounts.')
                         );
 
                     return;
@@ -148,10 +147,7 @@ class Inchoo_SocialConnect_FacebookController extends Mage_Core_Controller_Front
                 );
 
                 Mage::getSingleton('core/session')->addSuccess(
-                    $this->__('Your Facebook account is now connected to your
-                        store accout. You can now login using our Facebook Connect
-                        button or using store account credentials you will
-                        receive to your email address.')
+                    $this->__('Your Facebook account is now connected to your store accout. You can now login using our Facebook Connect button or using store account credentials you will receive to your email address.')
                 );
 
                 return;
@@ -165,8 +161,7 @@ class Inchoo_SocialConnect_FacebookController extends Mage_Core_Controller_Front
 
                 Mage::getSingleton('core/session')
                     ->addSuccess(
-                        $this->__('You have successfully logged in using your
-                            Facebook account.')
+                        $this->__('You have successfully logged in using your Facebook account.')
                     );
 
                 return;
@@ -186,9 +181,7 @@ class Inchoo_SocialConnect_FacebookController extends Mage_Core_Controller_Front
                 );
 
                 Mage::getSingleton('core/session')->addSuccess(
-                    $this->__('We have discovered you already have an account at
-                        our store. Your Facebook account is now connected to your
-                        store account.')
+                    $this->__('We have discovered you already have an account at our store. Your Facebook account is now connected to your store account.')
                 );
 
                 return;
@@ -197,15 +190,13 @@ class Inchoo_SocialConnect_FacebookController extends Mage_Core_Controller_Front
             // New connection - create, attach, login
             if(empty($userInfo->first_name)) {
                 throw new Exception(
-                    $this->__('Sorry, could not retrieve your Facebook first name.
-                        Please try again.')
+                    $this->__('Sorry, could not retrieve your Facebook first name. Please try again.')
                 );
             }
 
             if(empty($userInfo->last_name)) {
                 throw new Exception(
-                    $this->__('Sorry, could not retrieve your Facebook last name.
-                        Please try again.')
+                    $this->__('Sorry, could not retrieve your Facebook last name. Please try again.')
                 );
             }
 
@@ -218,10 +209,7 @@ class Inchoo_SocialConnect_FacebookController extends Mage_Core_Controller_Front
             );
 
             Mage::getSingleton('core/session')->addSuccess(
-                $this->__('Your Facebook account is now connected to your new user
-                    accout at our store. Now you can login using our Facebook Connect
-                    button or using store account credentials you will receive to
-                    your email address.')
+                $this->__('Your Facebook account is now connected to your new user accout at our store. Now you can login using our Facebook Connect button or using store account credentials you will receive to your email address.')
             );
         }
     }

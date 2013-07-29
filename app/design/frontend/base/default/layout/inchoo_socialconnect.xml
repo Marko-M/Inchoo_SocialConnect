@@ -47,6 +47,11 @@
                 <type>skin_css</type>
                 <name>inchoo_socialconnect/facebook/css/button.css</name>
             </action>
+            <action method="addItem"
+                ifconfig="customer/inchoo_socialconnect_twitter/enabled">
+                <type>skin_css</type>
+                <name>inchoo_socialconnect/twitter/css/button.css</name>
+            </action>
         </reference>
     </default>
 
@@ -61,9 +66,29 @@
             <block type="inchoo_socialconnect/login" name="inchoo_socialconnect_login">
                 <block type="inchoo_socialconnect/google_button" name="inchoo_socialconnect_google_login_button" />
                 <block type="inchoo_socialconnect/facebook_button" name="inchoo_socialconnect_facebook_login_button" />
+                <block type="inchoo_socialconnect/twitter_button" name="inchoo_socialconnect_twitter_login_button" />
             </block>
         </reference>
     </customer_account_login>
+    
+    <customer_account_create>        
+        <reference name="head">
+            <action method="addItem">
+                <type>skin_css</type>
+                <name>inchoo_socialconnect/css/styles.css</name>
+            </action>
+        </reference>
+        <reference name="customer_form_register">
+            <action method="setTemplate" >
+                <template>inchoo/socialconnect/customer/form/register.phtml</template>
+            </action>
+            <block type="inchoo_socialconnect/register" name="inchoo_socialconnect_register">
+                <block type="inchoo_socialconnect/google_button" name="inchoo_socialconnect_checkout_google_button" />
+                <block type="inchoo_socialconnect/facebook_button" name="inchoo_socialconnect_checkout_facebook_button" />
+                <block type="inchoo_socialconnect/twitter_button" name="inchoo_socialconnect_checkout_twitter_button" />
+            </block>
+        </reference>        
+    </customer_account_create>    
 
     <customer_account>
         <reference name="customer_account_navigation">
@@ -79,6 +104,12 @@
                 <path>socialconnect/account/facebook</path>
                 <label>Facebook Connect</label>
             </action>
+            <action method="addLink" translate="label" module="inchoo_socialconnect"
+                ifconfig="customer/inchoo_socialconnect_twitter/enabled">
+                <name>inchoo_socialconnect_twitter</name>
+                <path>socialconnect/account/twitter</path>
+                <label>Twitter Connect</label>
+            </action>
         </reference>
     </customer_account>
 
@@ -86,8 +117,7 @@
         <label>Customer My Account Google Connect</label>
         <update handle="customer_account"/>
         <reference name="head">
-            <action method="setTitle" translate="title" module="inchoo_socialconnect"
-                    >
+            <action method="setTitle" translate="title" module="inchoo_socialconnect">
                 <title>Google Connect</title>
             </action>
             <action method="addItem">
@@ -101,7 +131,7 @@
             </block>
         </reference>
         <reference name="customer_account_navigation">
-            <action method="setActive" translate="label" module="inchoo_socialconnect">
+            <action method="setActive" module="inchoo_socialconnect">
                 <path>socialconnect/account/google</path>
             </action>
         </reference>
@@ -125,11 +155,35 @@
             </block>
         </reference>
         <reference name="customer_account_navigation">
-            <action method="setActive" translate="label" module="inchoo_socialconnect">
+            <action method="setActive" module="inchoo_socialconnect">
                 <path>socialconnect/account/facebook</path>
             </action>
         </reference>
     </inchoo_socialconnect_account_facebook>
+
+   <inchoo_socialconnect_account_twitter translate="label">
+        <label>Customer My Account Twitter Connect</label>
+        <update handle="customer_account"/>
+        <reference name="head">
+            <action method="setTitle" translate="title" module="inchoo_socialconnect">
+                <title>Twitter Connect</title>
+            </action>
+            <action method="addItem">
+                <type>skin_css</type>
+                <name>inchoo_socialconnect/css/styles.css</name>
+            </action>
+        </reference>
+        <reference name="my.account.wrapper">
+            <block type="inchoo_socialconnect/twitter_account" name="inchoo_socialconnect_twitter_account">
+                <block type="inchoo_socialconnect/twitter_button" name="inchoo_socialconnect_account_twitter_button" />
+            </block>
+        </reference>
+        <reference name="customer_account_navigation">
+            <action method="setActive" module="inchoo_socialconnect">
+                <path>socialconnect/account/twitter</path>
+            </action>
+        </reference>
+    </inchoo_socialconnect_account_twitter>
 
     <checkout_onepage_index>
         <reference name="head">
@@ -145,6 +199,7 @@
             <block type="inchoo_socialconnect/checkout" name="inchoo_socialconnect_checkout">
                 <block type="inchoo_socialconnect/google_button" name="inchoo_socialconnect_checkout_google_button" />
                 <block type="inchoo_socialconnect/facebook_button" name="inchoo_socialconnect_checkout_facebook_button" />
+                <block type="inchoo_socialconnect/twitter_button" name="inchoo_socialconnect_checkout_twitter_button" />
             </block>
         </reference>
     </checkout_onepage_index>

@@ -1,3 +1,4 @@
+<?php
 /**
 * Inchoo
 *
@@ -30,36 +31,40 @@
 * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
 */
 
-div.inchoo-socialconnect-register,
-div.inchoo-socialconnect-checkout,
-div.inchoo-socialconnect-login {
-    margin-top: 28px;
-}
+class Inchoo_SocialConnect_Block_Register extends Mage_Core_Block_Template
+{
+    protected $clientGoogle = null;
+    protected $clientFacebook = null;
+    protected $clientTwitter = null;
 
-div.inchoo-socialconnect-login .content {
-    min-height: 100px;
-}
+    protected function _construct() {
+        parent::_construct();
 
-div.inchoo-socialconnect-register .fieldset {
-    margin: 0px;
-}
+        $this->clientGoogle = Mage::getSingleton('inchoo_socialconnect/google_client');
+        $this->clientFacebook = Mage::getSingleton('inchoo_socialconnect/facebook_client');
+        $this->clientTwitter = Mage::getSingleton('inchoo_socialconnect/twitter_client');
 
-div.inchoo-socialconnect-account .col3-set .col-1 {
-    width: 29%
-}
+        if(!$this->clientGoogle && !$this->clientFacebook && !$this->clientTwitter)
+            return;
 
-div.inchoo-socialconnect-account .col3-set .col-2 {
-    width: 49%
-}
+        Mage::register('inchoo_socialconnect_button_text', $this->__('Register'));
+                
+        $this->setTemplate('inchoo/socialconnect/register.phtml');
+    }
 
-div.inchoo-socialconnect-account .col3-set .col-3 {
-    width: 19%
-}
+    protected function _googleEnabled()
+    {
+        return (bool) $this->clientGoogle;
+    }
 
-div.inchoo-socialconnect-account .col2-set .col-1 {
-    width: 79%
-}
+    protected function _facebookEnabled()
+    {
+        return (bool) $this->clientFacebook;
+    }
 
-div.inchoo-socialconnect-account .col2-set .col-2 {
-    width: 19%
+    protected function _twitterEnabled()
+    {
+        return (bool) $this->clientTwitter;
+    }
+
 }
