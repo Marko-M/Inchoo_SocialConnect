@@ -46,22 +46,12 @@ class Inchoo_SocialConnect_Block_Twitter_Button extends Mage_Core_Block_Template
 
         $this->userInfo = Mage::registry('inchoo_socialconnect_twitter_userinfo');
 
-        $redirect = Mage::helper('core/url')->getCurrentUrl();
-        
-        /* Mage::getSingleton('customer/session')->getBeforeAuthUrl(true)
-         * returns value only on first call, we have multiple buttons so must 
-         * use registry
-         */
-        if(($referer = Mage::registry('inchoo_social_connect_before_auth'))) {
-            $redirect = $referer;
-        } else if(($referer = Mage::getSingleton('customer/session')->getBeforeAuthUrl(true))) {
-            Mage::register('inchoo_social_connect_before_auth', $referer);
-            $redirect = $referer;            
+        if(!($redirect = Mage::getSingleton('customer/session')->getBeforeAuthUrl())) {
+            $redirect = Mage::helper('core/url')->getCurrentUrl();      
         }
 
         // Redirect uri
         Mage::getSingleton('core/session')->setTwitterRedirect($redirect);
-
 
         $this->setTemplate('inchoo/socialconnect/twitter/button.phtml');
     }
