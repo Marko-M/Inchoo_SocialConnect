@@ -46,23 +46,14 @@ class Inchoo_SocialConnect_Block_Facebook_Button extends Mage_Core_Block_Templat
         }
 
         $this->userInfo = Mage::registry('inchoo_socialconnect_facebook_userinfo');
-
-        $redirect = Mage::helper('core/url')->getCurrentUrl();
-
-        /* Mage::getSingleton('customer/session')->getBeforeAuthUrl(true)
-         * returns value only on first call, we have multiple buttons so must 
-         * use registry
-         */
-        if(($referer = Mage::registry('inchoo_social_connect_before_auth'))) {
-            $redirect = $referer;
-        } else if(($referer = Mage::getSingleton('customer/session')->getBeforeAuthUrl(true))) {
-            Mage::register('inchoo_social_connect_before_auth', $referer);
-            $redirect = $referer;            
-        }
         
         // CSRF protection
         Mage::getSingleton('core/session')->setFacebookCsrf($csrf = md5(uniqid(rand(), TRUE)));
         $this->client->setState($csrf);
+        
+        if(!($redirect = Mage::getSingleton('customer/session')->getBeforeAuthUrl())) {
+            $redirect = Mage::helper('core/url')->getCurrentUrl();      
+        }        
         
         // Redirect uri
         Mage::getSingleton('core/session')->setFacebookRedirect($redirect);        
