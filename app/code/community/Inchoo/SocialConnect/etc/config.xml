@@ -42,9 +42,15 @@
     </modules>
     <default>
         <customer>
-            <inchoo_socialconnect>
-                <google_enabled>0</google_enabled>
-            </inchoo_socialconnect>
+            <inchoo_socialconnect_google>
+                <enabled>0</enabled>
+            </inchoo_socialconnect_google>
+            <inchoo_socialconnect_facebook>
+                <enabled>0</enabled>
+            </inchoo_socialconnect_facebook>	    
+            <inchoo_socialconnect_twitter>
+                <enabled>0</enabled>
+            </inchoo_socialconnect_twitter>	    	    
         </customer>
     </default>
     <frontend>
@@ -64,16 +70,7 @@
                 </inchoo_socialconnect>
             </updates>
         </layout>
-    </frontend>
-    <adminhtml>
-        <layout>
-            <updates>
-                <inchoo_socialconnect>
-                    <file>inchoo_socialconnect.xml</file>
-                </inchoo_socialconnect>
-            </updates>
-        </layout>
-    </adminhtml>    
+    </frontend>    
     <global>
         <models>
             <inchoo_socialconnect>
