@@ -32,9 +32,9 @@
 */
 ?>
 <div class="inchoo-socialconnect-register">   
-    <div class="col3-set">
+    <div class="<?php echo $this->_getColSet(); ?>">
         <?php if($this->_googleEnabled()): ?>
-        <div class="col-1">
+        <div class="<?php echo $this->_getCol(); ?> inchoo-socialconnect-register-google">
             <div class="fieldset">
                 <h2 class="legend"><?php echo $this->__('Google Connect') ?></h2>
                 <p><?php echo $this->__('You can register using your Google account.') ?></p>
@@ -43,7 +43,7 @@
         </div>
         <?php endif; ?>
         <?php if($this->_facebookEnabled()): ?>
-        <div class="col-2">
+        <div class="<?php echo $this->_getCol(); ?> inchoo-socialconnect-register-facebook">
             <div class="fieldset">
                 <h2 class="legend"><?php echo $this->__('Facebook Connect') ?></h2>
                 <p><?php echo $this->__('You can register using your Facebook account.') ?></p>
@@ -52,7 +52,7 @@
         </div>
         <?php endif; ?>
         <?php if($this->_twitterEnabled()): ?>
-        <div class="col-3">
+        <div class="<?php echo $this->_getCol(); ?> inchoo-socialconnect-register-twitter">
             <div class="fieldset">
                 <h2 class="legend"><?php echo $this->__('Twitter Connect') ?></h2>
                 <p><?php echo $this->__('You can register using your Twitter account.') ?></p>
