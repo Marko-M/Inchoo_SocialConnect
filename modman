@@ -1,0 +1,5 @@
+app/code/community/Inchoo/SocialConnect/                          app/code/community/Inchoo/SocialConnect/
+app/design/frontend/base/default/layout/inchoo_socialconnect.xml  app/design/frontend/base/default/layout/inchoo_socialconnect.xml 
+app/design/frontend/base/default/template/inchoo/socialconnect/   app/design/frontend/base/default/template/inchoo/socialconnect/
+app/etc/modules/Inchoo_SocialConnect.xml                          app/etc/modules/Inchoo_SocialConnect.xml
+skin/frontend/base/default/inchoo_socialconnect/                  skin/frontend/base/default/inchoo_socialconnect/
