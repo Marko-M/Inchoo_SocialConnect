@@ -12,7 +12,7 @@
 "No refresh token, unable to refresh access token","Ingen refresh token, kan ikke opdatere adgangs-token"
 "Unable to retrieve request token","Kunne ikke få adgang til request token"
 "Unable to retrieve access token","Kunne ikke få adgang til acces token"
-"Unable to proceeed without an access token","Kan ikke forsætte uden access token"
+"Unable to proceed without an access token","Kan ikke forsætte uden access token"
 "You have successfully disconnected your Facebook account from our store account.","Du har nu frakoblet din Facebook konto fra vores butik."
 "Facebook Connect process aborted.","Facebook Connect process afbrudt."
 "Sorry, "%s" error occured. Please try again.","Desværre, "%s" fejl. Prøv venligst igen."
