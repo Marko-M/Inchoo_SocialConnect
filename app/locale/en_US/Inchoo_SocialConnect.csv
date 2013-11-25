@@ -13,7 +13,7 @@
 "Unspecified OAuth error occurred","Unspecified OAuth error occurred"
 "Unable to retrieve request token","Unable to retrieve request token"
 "Unable to retrieve access token","Unable to retrieve access token"
-"Unable to proceeed without an access token","Unable to proceeed without an access token"
+"Unable to proceed without an access token","Unable to proceed without an access token"
 "You have successfully disconnected your Facebook account from our store account.","You have successfully disconnected your Facebook account from our store account."
 "Facebook Connect process aborted.","Facebook Connect process aborted."
 "Sorry, "%s" error occured. Please try again.","Sorry, "%s" error occured. Please try again."
