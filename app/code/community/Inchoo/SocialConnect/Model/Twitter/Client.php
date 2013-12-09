@@ -164,7 +164,7 @@ class Inchoo_SocialConnect_Model_Twitter_Client
         if(empty($this->token)) {
             throw new Exception(
                 Mage::helper('inchoo_socialconnect')
-                    ->__('Unable to proceeed without an access token.')
+                    ->__('Unable to proceed without an access token.')
             );
         }
 
