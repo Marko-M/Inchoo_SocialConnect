@@ -31,23 +31,23 @@
 * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
 */
 
-class Inchoo_SocialConnect_Model_Facebook_Client
+class Inchoo_SocialConnect_Model_Linkedin_Client
 {
-    const REDIRECT_URI_ROUTE = 'socialconnect/facebook/connect';
+    const REDIRECT_URI_ROUTE = 'socialconnect/linkedin/connect';
 
-    const XML_PATH_ENABLED = 'customer/inchoo_socialconnect_facebook/enabled';
-    const XML_PATH_CLIENT_ID = 'customer/inchoo_socialconnect_facebook/client_id';
-    const XML_PATH_CLIENT_SECRET = 'customer/inchoo_socialconnect_facebook/client_secret';
+    const XML_PATH_ENABLED = 'customer/inchoo_socialconnect_linkedin/enabled';
+    const XML_PATH_CLIENT_ID = 'customer/inchoo_socialconnect_linkedin/client_id';
+    const XML_PATH_CLIENT_SECRET = 'customer/inchoo_socialconnect_linkedin/client_secret';
 
-    const OAUTH2_SERVICE_URI = 'https://graph.facebook.com';
-    const OAUTH2_AUTH_URI = 'https://graph.facebook.com/oauth/authorize';
-    const OAUTH2_TOKEN_URI = 'https://graph.facebook.com/oauth/access_token';
+    const OAUTH2_SERVICE_URI = 'https://api.linkedin.com/v1';
+    const OAUTH2_AUTH_URI = 'https://www.linkedin.com/uas/oauth2/authorization';
+    const OAUTH2_TOKEN_URI = 'https://www.linkedin.com/uas/oauth2/accessToken';
 
     protected $clientId = null;
     protected $clientSecret = null;
     protected $redirectUri = null;
     protected $state = '';
-    protected $scope = array('email', 'user_birthday');
+    protected $scope = array('r_basicprofile', 'r_emailaddress');
 
     protected $token = null;
 
@@ -125,6 +125,7 @@ class Inchoo_SocialConnect_Model_Facebook_Client
         self::OAUTH2_AUTH_URI.'?'.
             http_build_query(
                 array(
+                    'response_type' => 'code',
                     'client_id' => $this->clientId,
                     'redirect_uri' => $this->redirectUri,
                     'state' => $this->state,
@@ -134,7 +135,7 @@ class Inchoo_SocialConnect_Model_Facebook_Client
         return $url;
     }
 
-    public function api($endpoint, $method = 'GET', $params = array())
+    public function api($endpoint, $method = 'GET', $params = array(), $fields = array())
     {
         if(empty($this->token)) {
             $this->fetchAccessToken();
@@ -142,13 +143,28 @@ class Inchoo_SocialConnect_Model_Facebook_Client
 
         $url = self::OAUTH2_SERVICE_URI.$endpoint;
 
+        if(!empty($params)) {
+            foreach ($params as $key => $value) {
+                $url .= '/'.$key;
+
+                if(!empty($value)) {
+                    $url .= '='.$value;
+                }
+            }
+        }
+
+        if(!empty($fields)) {
+            $url .= ':(' .implode(',', $fields).')';
+        }
+
         $method = strtoupper($method);
 
         $params = array_merge(array(
-            'access_token' => $this->token->access_token
+            'oauth2_access_token' => $this->token->access_token,
+            'format' => 'json'
         ), $params);
 
-        $response = $this->_httpRequest($url, $method, $params);
+        $response = $this->_httpRequest($url, $method, $params, $fields);
 
         return $response;
     }
@@ -204,19 +220,6 @@ class Inchoo_SocialConnect_Model_Facebook_Client
 
         $decoded_response = json_decode($response->getBody());
 
-        /*
-         * Per http://tools.ietf.org/html/draft-ietf-oauth-v2-27#section-5.1
-         * Facebook should return data using the "application/json" media type.
-         * Facebook violates OAuth2 specification and returns string. If this
-         * ever gets fixed, following condition will not be used anymore.
-         */
-        if(empty($decoded_response)) {
-            $parsed_response = array();
-            parse_str($response->getBody(), $parsed_response);
-
-            $decoded_response = json_decode(json_encode($parsed_response));
-        }
-
         if($response->isError()) {
             $status = $response->getStatus();
             if(($status == 400 || $status == 401)) {
@@ -227,7 +230,7 @@ class Inchoo_SocialConnect_Model_Facebook_Client
                         ->__('Unspecified OAuth error occurred.');
                 }
 
-                throw new Inchoo_SocialConnect_FacebookOAuthException($message);
+                throw new Inchoo_SocialConnect_LinkedinOAuthException($message);
             } else {
                 $message = sprintf(
                     Mage::helper('inchoo_socialconnect')
@@ -264,5 +267,5 @@ class Inchoo_SocialConnect_Model_Facebook_Client
 
 }
 
-class Inchoo_SocialConnect_FacebookOAuthException extends Exception
+class Inchoo_SocialConnect_LinkedinOAuthException extends Exception
 {}

@@ -54,5 +54,12 @@
             <?php echo $this->getChildHtml('inchoo_socialconnect_checkout_twitter_button')?>
         </div>
         <?php endif; ?>
+        <?php if($this->_linkedinEnabled()): ?>
+        <div class="<?php echo $this->_getCol(); ?> inchoo-socialconnect-checkout-linkedin">
+            <h3><?php echo $this->__('LinkedIn Connect') ?></h3>
+            <p><?php echo $this->__('You can continue with checkout using your <strong>Linkedin</strong> account.') ?></p>
+            <?php echo $this->getChildHtml('inchoo_socialconnect_checkout_linkedin_button')?>
+        </div>
+        <?php endif; ?>        
     </div>
 </div>

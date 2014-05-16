@@ -42,6 +42,8 @@ class Inchoo_SocialConnect_FacebookController extends Mage_Core_Controller_Front
         } catch (Exception $e) {
             Mage::getSingleton('core/session')->addError($e->getMessage());
         }
+        
+        Mage::getSingleton('core/session')->unsFacebookRedirect();
 
         if(!empty($this->referer)) {
             $this->_redirectUrl($this->referer);
@@ -111,8 +113,6 @@ class Inchoo_SocialConnect_FacebookController extends Mage_Core_Controller_Front
                     $errorCode
                 )
             );
-
-            return;
         }
 
         if ($code) {

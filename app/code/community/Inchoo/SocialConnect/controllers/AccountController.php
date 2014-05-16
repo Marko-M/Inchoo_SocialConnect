@@ -86,4 +86,15 @@ class Inchoo_SocialConnect_AccountController extends Mage_Core_Controller_Front_
         $this->renderLayout();
     }    
     
+    public function linkedinAction()
+    {        
+        $userInfo = Mage::getSingleton('inchoo_socialconnect/linkedin_info_user')
+            ->load();
+        
+        Mage::register('inchoo_socialconnect_linkedin_userinfo', $userInfo);
+        
+        $this->loadLayout();
+        $this->renderLayout();
+    }     
+    
 }
