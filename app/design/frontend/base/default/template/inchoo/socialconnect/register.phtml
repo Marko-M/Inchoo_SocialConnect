@@ -60,5 +60,14 @@
             </div>
         </div>
         <?php endif; ?>
+        <?php if($this->_linkedinEnabled()): ?>
+        <div class="<?php echo $this->_getCol(); ?> inchoo-socialconnect-register-linkedin">
+            <div class="fieldset">
+                <h2 class="legend"><?php echo $this->__('LinkedIn Connect') ?></h2>
+                <p><?php echo $this->__('You can register using your LinkedIn account.') ?></p>
+                <p><?php echo $this->getChildHtml('inchoo_socialconnect_checkout_linkedin_button')?></p>
+            </div>
+        </div>
+        <?php endif; ?>        
     </div>
 </div>

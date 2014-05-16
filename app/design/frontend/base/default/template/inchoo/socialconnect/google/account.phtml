@@ -39,7 +39,7 @@
     <?php if($this->_hasUserInfo()): ?>
 
     <?php
-        $googleId = $this->_getGoogleId();
+        $facebookId = $this->_getGoogleId();
         $status = $this->_getStatus();
         $email = $this->_getEmail();
         $picture = $this->_getPicture();
@@ -69,9 +69,9 @@
                         <?php printf($this->__('Email: %s', '<strong>'.$email.'</strong>')) ?>
                     </p>
                     <?php endif; ?>                
-                    <?php if(!empty($googleId)): ?>
+                    <?php if(!empty($facebookId)): ?>
                     <p>
-                        <?php printf($this->__('Google #: %s', '<strong>'.$googleId.'</strong>')) ?>
+                        <?php printf($this->__('Google #: %s', '<strong>'.$facebookId.'</strong>')) ?>
                     </p>
                     <?php endif; ?>
                     <?php if(!empty($gender)): ?>
