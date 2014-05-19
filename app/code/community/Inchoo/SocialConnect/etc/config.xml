@@ -37,7 +37,7 @@
 <config>
     <modules>
         <Inchoo_SocialConnect>
-            <version>0.3.0</version>
+            <version>0.3.1</version>
         </Inchoo_SocialConnect>
     </modules>
     <default>
@@ -47,10 +47,10 @@
             </inchoo_socialconnect_google>
             <inchoo_socialconnect_facebook>
                 <enabled>0</enabled>
-            </inchoo_socialconnect_facebook>	    
+            </inchoo_socialconnect_facebook>
             <inchoo_socialconnect_twitter>
                 <enabled>0</enabled>
-            </inchoo_socialconnect_twitter>	    	    
+            </inchoo_socialconnect_twitter>
         </customer>
     </default>
     <frontend>
@@ -62,7 +62,7 @@
                      </files>
                 </Inchoo_SocialConnect>
             </modules>
-        </translate>        
+        </translate>
         <layout>
             <updates>
                 <inchoo_socialconnect>
@@ -70,7 +70,16 @@
                 </inchoo_socialconnect>
             </updates>
         </layout>
-    </frontend>    
+        <routers>
+            <inchoo_socialconnect>
+                <use>standard</use>
+                <args>
+                    <module>Inchoo_SocialConnect</module>
+                    <frontName>socialconnect</frontName>
+                </args>
+            </inchoo_socialconnect>
+        </routers>
+    </frontend>
     <global>
         <models>
             <inchoo_socialconnect>
@@ -80,7 +89,7 @@
         <blocks>
             <inchoo_socialconnect>
                 <class>Inchoo_SocialConnect_Block</class>
-            </inchoo_socialconnect>            
+            </inchoo_socialconnect>
         </blocks>
         <helpers>
             <inchoo_socialconnect>
@@ -94,17 +103,6 @@
                     <class>Inchoo_SocialConnect_Model_Resource_Setup</class>
                 </setup>
             </inchoo_socialconnect_setup>
-        </resources>        
+        </resources>
     </global>
-    <frontend>
-        <routers>
-            <inchoo_socialconnect>
-                <use>standard</use>
-                <args>
-                    <module>Inchoo_SocialConnect</module>
-                    <frontName>socialconnect</frontName>
-                </args>
-            </inchoo_socialconnect>
-        </routers>  
-    </frontend>    
 </config>

@@ -31,49 +31,12 @@
 * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
 */
 
-class Inchoo_SocialConnect_GoogleController extends Mage_Core_Controller_Front_Action
+class Inchoo_SocialConnect_GoogleController extends Inchoo_SocialConnect_Controller_Abstract
 {
-    protected $referer = null;
-
-    public function connectAction()
-    {
-        try {
-            $this->_connectCallback();
-        } catch (Exception $e) {
-            Mage::getSingleton('core/session')->addError($e->getMessage());
-        }
-        
-        Mage::getSingleton('core/session')->unsGoogleRedirect();
-
-        if(!empty($this->referer)) {
-            $this->_redirectUrl($this->referer);
-        } else {
-            Mage::helper('inchoo_socialconnect')->redirect404($this);
-        }
-    }
-
-    public function disconnectAction()
-    {
-        $customer = Mage::getSingleton('customer/session')->getCustomer();
-
-        try {
-            $this->_disconnectCallback($customer);
-        } catch (Exception $e) {
-            Mage::getSingleton('core/session')->addError($e->getMessage());
-        }
-
-        if(!empty($this->referer)) {
-            $this->_redirectUrl($this->referer);
-        } else {
-            Mage::helper('inchoo_socialconnect')->redirect404($this);
-        }
-    }
 
     protected function _disconnectCallback(Mage_Customer_Model_Customer $customer) {
-        $this->referer = Mage::getUrl('socialconnect/account/google');        
-        
         Mage::helper('inchoo_socialconnect/google')->disconnect($customer);
-        
+
         Mage::getSingleton('core/session')
             ->addSuccess(
                 $this->__('You have successfully disconnected your Google account from our store account.')
@@ -86,13 +49,11 @@ class Inchoo_SocialConnect_GoogleController extends Mage_Core_Controller_Front_A
         $state = $this->getRequest()->getParam('state');
         if(!($errorCode || $code) && !$state) {
             // Direct route access - deny
-            return;
+            return $this;
         }
-        
-        $this->referer = Mage::getSingleton('core/session')->getGoogleRedirect();
 
         if(!$state || $state != Mage::getSingleton('core/session')->getGoogleCsrf()) {
-            return;
+            return $this;
         }
 
         if($errorCode) {
@@ -103,7 +64,7 @@ class Inchoo_SocialConnect_GoogleController extends Mage_Core_Controller_Front_A
                         $this->__('Google Connect process aborted.')
                     );
 
-                return;
+                return $this;
             }
 
             throw new Exception(
@@ -133,7 +94,7 @@ class Inchoo_SocialConnect_GoogleController extends Mage_Core_Controller_Front_A
                             $this->__('Your Google account is already connected to one of our store accounts.')
                         );
 
-                    return;
+                    return $this;
                 }
 
                 // Connect from account dashboard - attach
@@ -146,10 +107,10 @@ class Inchoo_SocialConnect_GoogleController extends Mage_Core_Controller_Front_A
                 );
 
                 Mage::getSingleton('core/session')->addSuccess(
-                    $this->__('Your Google account is now connected to your store accout. You can now login using our Google Connect button or using store account credentials you will receive to your email address.')
+                    $this->__('Your Google account is now connected to your store accout. You can now login using our Google Login button or using store account credentials you will receive to your email address.')
                 );
 
-                return;
+                return $this;
             }
 
             if($customersByGoogleId->count()) {
@@ -163,7 +124,7 @@ class Inchoo_SocialConnect_GoogleController extends Mage_Core_Controller_Front_A
                         $this->__('You have successfully logged in using your Google account.')
                     );
 
-                return;
+                return $this;
             }
 
             $customersByEmail = Mage::helper('inchoo_socialconnect/facebook')
@@ -172,7 +133,7 @@ class Inchoo_SocialConnect_GoogleController extends Mage_Core_Controller_Front_A
             if($customersByEmail->count())  {
                 // Email account already exists - attach, login
                 $customer = $customersByEmail->getFirstItem();
-                
+
                 Mage::helper('inchoo_socialconnect/google')->connectByGoogleId(
                     $customer,
                     $userInfo->id,
@@ -183,7 +144,7 @@ class Inchoo_SocialConnect_GoogleController extends Mage_Core_Controller_Front_A
                     $this->__('We have discovered you already have an account at our store. Your Google account is now connected to your store account.')
                 );
 
-                return;
+                return $this;
             }
 
             // New connection - create, attach, login
@@ -208,7 +169,7 @@ class Inchoo_SocialConnect_GoogleController extends Mage_Core_Controller_Front_A
             );
 
             Mage::getSingleton('core/session')->addSuccess(
-                $this->__('Your Google account is now connected to your new user accout at our store. Now you can login using our Google Connect button or using store account credentials you will receive to your email address.')
+                $this->__('Your Google account is now connected to your new user accout at our store. Now you can login using our Google Login button or using store account credentials you will receive to your email address.')
             );
         }
     }

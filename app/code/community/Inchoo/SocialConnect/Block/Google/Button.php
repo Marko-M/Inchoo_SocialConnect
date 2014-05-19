@@ -50,13 +50,9 @@ class Inchoo_SocialConnect_Block_Google_Button extends Mage_Core_Block_Template
         // CSRF protection
         Mage::getSingleton('core/session')->setGoogleCsrf($csrf = md5(uniqid(rand(), TRUE)));
         $this->client->setState($csrf);
-        
-        if(!($redirect = Mage::getSingleton('customer/session')->getBeforeAuthUrl())) {
-            $redirect = Mage::helper('core/url')->getCurrentUrl();      
-        }        
-        
-        // Redirect uri
-        Mage::getSingleton('core/session')->setGoogleRedirect($redirect);        
+
+        Mage::getSingleton('customer/session')
+            ->setSocialConnectRedirect(Mage::helper('core/url')->getCurrentUrl());
 
         $this->setTemplate('inchoo/socialconnect/google/button.phtml');
     }
@@ -79,7 +75,7 @@ class Inchoo_SocialConnect_Block_Google_Button extends Mage_Core_Block_Template
         } else {
             $text = $this->__('Disconnect');
         }
-        
+
         return $text;
     }
 

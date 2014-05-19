@@ -31,47 +31,10 @@
 * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
 */
 
-class Inchoo_SocialConnect_LinkedinController extends Mage_Core_Controller_Front_Action
+class Inchoo_SocialConnect_LinkedinController extends Inchoo_SocialConnect_Controller_Abstract
 {
-    protected $referer = null;
-
-    public function connectAction()
-    {
-        try {
-            $this->_connectCallback();
-        } catch (Exception $e) {
-            Mage::getSingleton('core/session')->addError($e->getMessage());
-        }
-
-        Mage::getSingleton('core/session')->unsLinkedinRedirect();        
-        
-        if(!empty($this->referer)) {
-            $this->_redirectUrl($this->referer);
-        } else {
-            Mage::helper('inchoo_socialconnect')->redirect404($this);
-        }
-    }
-
-    public function disconnectAction()
-    {
-        $customer = Mage::getSingleton('customer/session')->getCustomer();
-
-        try {
-            $this->_disconnectCallback($customer);
-        } catch (Exception $e) {
-            Mage::getSingleton('core/session')->addError($e->getMessage());
-        }
-
-        if(!empty($this->referer)) {
-            $this->_redirectUrl($this->referer);
-        } else {
-            Mage::helper('inchoo_socialconnect')->redirect404($this);
-        }
-    }
 
     protected function _disconnectCallback(Mage_Customer_Model_Customer $customer) {
-        $this->referer = Mage::getUrl('socialconnect/account/linkedin');  
-        
         Mage::helper('inchoo_socialconnect/linkedin')->disconnect($customer);
 
         Mage::getSingleton('core/session')
@@ -86,14 +49,11 @@ class Inchoo_SocialConnect_LinkedinController extends Mage_Core_Controller_Front
         $state = $this->getRequest()->getParam('state');
         if(!($errorCode || $code) && !$state) {
             // Direct route access - deny
-            return;
+            return $this;
         }
-        
-        $this->referer = Mage::getSingleton('core/session')
-            ->getLinkedinRedirect();
 
         if(!$state || $state != Mage::getSingleton('core/session')->getLinkedinCsrf()) {
-            return;
+            return $this;
         }
 
         if($errorCode) {
@@ -104,7 +64,7 @@ class Inchoo_SocialConnect_LinkedinController extends Mage_Core_Controller_Front
                         $this->__('Linkedin Connect process aborted.')
                     );
 
-                return;
+                return $this;
             }
 
             throw new Exception(
@@ -117,11 +77,11 @@ class Inchoo_SocialConnect_LinkedinController extends Mage_Core_Controller_Front
 
         if ($code) {
             // Linkedin API green light - proceed
-            
+
             $info = Mage::getModel('inchoo_socialconnect/linkedin_info')
                 ->load();
             /* @var $info Inchoo_SocialConnect_Model_Linkedin_Userinfo */
-            
+
             $token = $info->getClient()->getAccessToken();
 
             $customersByLinkedinId = Mage::helper('inchoo_socialconnect/linkedin')
@@ -129,14 +89,14 @@ class Inchoo_SocialConnect_LinkedinController extends Mage_Core_Controller_Front
 
             if(Mage::getSingleton('customer/session')->isLoggedIn()) {
                 // Logged in user
-                if($customersByLinkedinId->count()) {
+                if($customersByLinkedinId->getSize() > 0) {
                     // Linkedin account already connected to other account - deny
                     Mage::getSingleton('core/session')
                         ->addNotice(
                             $this->__('Your Linkedin account is already connected to one of our store accounts.')
                         );
 
-                    return;
+                    return $this;
                 }
 
                 // Connect from account dashboard - attach
@@ -149,10 +109,10 @@ class Inchoo_SocialConnect_LinkedinController extends Mage_Core_Controller_Front
                 );
 
                 Mage::getSingleton('core/session')->addSuccess(
-                    $this->__('Your Linkedin account is now connected to your store accout. You can now login using our Linkedin Connect button or using store account credentials you will receive to your email address.')
+                    $this->__('Your Linkedin account is now connected to your store accout. You can now login using our LinkedIn Login button or using store account credentials you will receive to your email address.')
                 );
 
-                return;
+                return $this;
             }
 
             if($customersByLinkedinId->getSize() > 0) {
@@ -166,16 +126,16 @@ class Inchoo_SocialConnect_LinkedinController extends Mage_Core_Controller_Front
                         $this->__('You have successfully logged in using your Linkedin account.')
                     );
 
-                return;
+                return $this;
             }
 
             $customersByEmail = Mage::helper('inchoo_socialconnect/linkedin')
                 ->getCustomersByEmail($info->getEmailAddress());
 
-            if($customersByEmail->getSize() > 0) {                
+            if($customersByEmail->getSize() > 0) {
                 // Email account already exists - attach, login
                 $customer = $customersByEmail->getFirstItem();
-                
+
                 Mage::helper('inchoo_socialconnect/linkedin')->connectByLinkedinId(
                     $customer,
                     $info->getId(),
@@ -186,7 +146,7 @@ class Inchoo_SocialConnect_LinkedinController extends Mage_Core_Controller_Front
                     $this->__('We have discovered you already have an account at our store. Your Linkedin account is now connected to your store account.')
                 );
 
-                return;
+                return $this;
             }
 
             // New connection - create, attach, login
@@ -211,7 +171,7 @@ class Inchoo_SocialConnect_LinkedinController extends Mage_Core_Controller_Front
             );
 
             Mage::getSingleton('core/session')->addSuccess(
-                $this->__('Your Linkedin account is now connected to your new user accout at our store. Now you can login using our Linkedin Connect button or using store account credentials you will receive to your email address.')
+                $this->__('Your Linkedin account is now connected to your new user accout at our store. Now you can login using our LinkedIn Login button or using store account credentials you will receive to your email address.')
             );
         }
     }
