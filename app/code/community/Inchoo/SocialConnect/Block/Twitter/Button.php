@@ -46,12 +46,8 @@ class Inchoo_SocialConnect_Block_Twitter_Button extends Mage_Core_Block_Template
 
         $this->userInfo = Mage::registry('inchoo_socialconnect_twitter_userinfo');
 
-        if(!($redirect = Mage::getSingleton('customer/session')->getBeforeAuthUrl())) {
-            $redirect = Mage::helper('core/url')->getCurrentUrl();      
-        }
-
-        // Redirect uri
-        Mage::getSingleton('core/session')->setTwitterRedirect($redirect);
+        Mage::getSingleton('customer/session')
+            ->setSocialConnectRedirect(Mage::helper('core/url')->getCurrentUrl());
 
         $this->setTemplate('inchoo/socialconnect/twitter/button.phtml');
     }
@@ -74,7 +70,7 @@ class Inchoo_SocialConnect_Block_Twitter_Button extends Mage_Core_Block_Template
         } else {
             $text = $this->__('Disconnect');
         }
-        
+
         return $text;
     }
 

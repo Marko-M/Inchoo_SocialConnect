@@ -37,7 +37,7 @@ class Inchoo_SocialConnect_Helper_Twitter extends Mage_Core_Helper_Abstract
     public function disconnect(Mage_Customer_Model_Customer $customer) {
         Mage::getSingleton('customer/session')
                 ->unsInchooSocialconnectTwitterUserinfo();
-        
+
         $pictureFilename = Mage::getBaseDir(Mage_Core_Model_Store::URL_TYPE_MEDIA)
                 .DS
                 .'inchoo'
@@ -45,18 +45,18 @@ class Inchoo_SocialConnect_Helper_Twitter extends Mage_Core_Helper_Abstract
                 .'socialconnect'
                 .DS
                 .'twitter'
-                .DS                
+                .DS
                 .$customer->getInchooSocialconnectTid();
-        
+
         if(file_exists($pictureFilename)) {
             @unlink($pictureFilename);
-        }        
-        
+        }
+
         $customer->setInchooSocialconnectTid(null)
         ->setInchooSocialconnectTtoken(null)
-        ->save();   
+        ->save();
     }
-    
+
     public function connectByTwitterId(
             Mage_Customer_Model_Customer $customer,
             $twitterId,
@@ -65,10 +65,10 @@ class Inchoo_SocialConnect_Helper_Twitter extends Mage_Core_Helper_Abstract
         $customer->setInchooSocialconnectTid($twitterId)
                 ->setInchooSocialconnectTtoken($token)
                 ->save();
-        
+
         Mage::getSingleton('customer/session')->setCustomerAsLoggedIn($customer);
     }
-    
+
     public function connectByCreatingAccount(
             $email,
             $name,
@@ -78,7 +78,7 @@ class Inchoo_SocialConnect_Helper_Twitter extends Mage_Core_Helper_Abstract
         $customer = Mage::getModel('customer/customer');
 
         $name = explode(' ', $name, 2);
-        
+
         if(count($name) > 1) {
             $firstName = $name[0];
             $lastName = $name[1];
@@ -86,7 +86,7 @@ class Inchoo_SocialConnect_Helper_Twitter extends Mage_Core_Helper_Abstract
             $firstName = $name[0];
             $lastName = $name[0];
         }
-        
+
         $customer->setEmail($email)
                 ->setFirstname($firstName)
                 ->setLastname($lastName)
@@ -98,10 +98,10 @@ class Inchoo_SocialConnect_Helper_Twitter extends Mage_Core_Helper_Abstract
         $customer->setConfirmation(null);
         $customer->save();
 
-        Mage::getSingleton('customer/session')->setCustomerAsLoggedIn($customer);            
+        Mage::getSingleton('customer/session')->setCustomerAsLoggedIn($customer);
 
     }
-    
+
     public function loginByCustomer(Mage_Customer_Model_Customer $customer)
     {
         if($customer->getConfirmation()) {
@@ -109,9 +109,9 @@ class Inchoo_SocialConnect_Helper_Twitter extends Mage_Core_Helper_Abstract
             $customer->save();
         }
 
-        Mage::getSingleton('customer/session')->setCustomerAsLoggedIn($customer);        
+        Mage::getSingleton('customer/session')->setCustomerAsLoggedIn($customer);
     }
-    
+
     public function getCustomersByTwitterId($twitterId)
     {
         $customer = Mage::getModel('customer/customer');
@@ -136,7 +136,7 @@ class Inchoo_SocialConnect_Helper_Twitter extends Mage_Core_Helper_Abstract
 
         return $collection;
     }
-    
+
     public function getCustomersByEmail($email)
     {
         $customer = Mage::getModel('customer/customer');
@@ -150,29 +150,29 @@ class Inchoo_SocialConnect_Helper_Twitter extends Mage_Core_Helper_Abstract
                 'website_id',
                 Mage::app()->getWebsite()->getId()
             );
-        }  
-        
+        }
+
         if(Mage::getSingleton('customer/session')->isLoggedIn()) {
             $collection->addFieldToFilter(
                 'entity_id',
                 array('neq' => Mage::getSingleton('customer/session')->getCustomerId())
             );
-        }        
-        
+        }
+
         return $collection;
     }
 
     public function getProperDimensionsPictureUrl($twitterId, $pictureUrl)
     {
         $pictureUrl = str_replace('_normal', '', $pictureUrl);
-        
+
         $url = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_MEDIA)
                 .'inchoo'
                 .'/'
                 .'socialconnect'
                 .'/'
                 .'twitter'
-                .'/'                
+                .'/'
                 .$twitterId;
 
         $filename = Mage::getBaseDir(Mage_Core_Model_Store::URL_TYPE_MEDIA)
@@ -182,7 +182,7 @@ class Inchoo_SocialConnect_Helper_Twitter extends Mage_Core_Helper_Abstract
                 .'socialconnect'
                 .DS
                 .'twitter'
-                .DS                
+                .DS
                 .$twitterId;
 
         $directory = dirname($filename);
@@ -192,7 +192,7 @@ class Inchoo_SocialConnect_Helper_Twitter extends Mage_Core_Helper_Abstract
                 return null;
         }
 
-        if(!file_exists($filename) || 
+        if(!file_exists($filename) ||
                 (file_exists($filename) && (time() - filemtime($filename) >= 3600))){
             $client = new Zend_Http_Client($pictureUrl);
             $client->setStream();
@@ -206,8 +206,8 @@ class Inchoo_SocialConnect_Helper_Twitter extends Mage_Core_Helper_Abstract
             $imageObj->resize(150, 150);
             $imageObj->save($filename);
         }
-        
+
         return $url;
     }
-    
+
 }
