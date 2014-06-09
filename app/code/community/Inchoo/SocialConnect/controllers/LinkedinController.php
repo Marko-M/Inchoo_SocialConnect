@@ -89,7 +89,7 @@ class Inchoo_SocialConnect_LinkedinController extends Inchoo_SocialConnect_Contr
 
             if(Mage::getSingleton('customer/session')->isLoggedIn()) {
                 // Logged in user
-                if($customersByLinkedinId->getSize() > 0) {
+                if($customersByLinkedinId->getSize()) {
                     // Linkedin account already connected to other account - deny
                     Mage::getSingleton('core/session')
                         ->addNotice(
@@ -115,7 +115,7 @@ class Inchoo_SocialConnect_LinkedinController extends Inchoo_SocialConnect_Contr
                 return $this;
             }
 
-            if($customersByLinkedinId->getSize() > 0) {
+            if($customersByLinkedinId->getSize()) {
                 // Existing connected user - login
                 $customer = $customersByLinkedinId->getFirstItem();
 
@@ -132,7 +132,7 @@ class Inchoo_SocialConnect_LinkedinController extends Inchoo_SocialConnect_Contr
             $customersByEmail = Mage::helper('inchoo_socialconnect/linkedin')
                 ->getCustomersByEmail($info->getEmailAddress());
 
-            if($customersByEmail->getSize() > 0) {
+            if($customersByEmail->getSize()) {
                 // Email account already exists - attach, login
                 $customer = $customersByEmail->getFirstItem();
 

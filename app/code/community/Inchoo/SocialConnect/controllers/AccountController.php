@@ -81,11 +81,13 @@ class Inchoo_SocialConnect_AccountController extends Mage_Core_Controller_Front_
     {
         // Cache user info inside customer session due to Twitter window frame rate limits
         if(!($userInfo = Mage::getSingleton('customer/session')
-                ->getInchooSocialconnectTwitterUserinfo())) {
-            $userInfo = Mage::getSingleton('inchoo_socialconnect/twitter_userinfo')
-                ->getUserInfo();
+                ->getInchooSocialconnectTwitterUserinfo()) || !$userInfo->hasData()) {
+            
+            $userInfo = Mage::getSingleton('inchoo_socialconnect/twitter_info_user')
+                ->load();
 
-            Mage::getSingleton('customer/session')->setInchooSocialconnectTwitterUserinfo($userInfo);
+            Mage::getSingleton('customer/session')
+                ->setInchooSocialconnectTwitterUserinfo($userInfo);
         }
 
         Mage::register('inchoo_socialconnect_twitter_userinfo', $userInfo);

@@ -31,48 +31,53 @@
 * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
 */
 
-class Inchoo_SocialConnect_Model_Linkedin_Client
+class Inchoo_SocialConnect_Model_Twitter_Oauth_Client
 {
-    const REDIRECT_URI_ROUTE = 'socialconnect/linkedin/connect';
+    const REDIRECT_URI_ROUTE = 'socialconnect/twitter/connect';
+    const REQUEST_TOKEN_URI_ROUTE = 'socialconnect/twitter/request';
 
-    const XML_PATH_ENABLED = 'customer/inchoo_socialconnect_linkedin/enabled';
-    const XML_PATH_CLIENT_ID = 'customer/inchoo_socialconnect_linkedin/client_id';
-    const XML_PATH_CLIENT_SECRET = 'customer/inchoo_socialconnect_linkedin/client_secret';
+    const OAUTH_URI = 'https://api.twitter.com/oauth';
+    const OAUTH2_SERVICE_URI = 'https://api.twitter.com/1.1';    
 
-    const OAUTH2_SERVICE_URI = 'https://api.linkedin.com/v1';
-    const OAUTH2_AUTH_URI = 'https://www.linkedin.com/uas/oauth2/authorization';
-    const OAUTH2_TOKEN_URI = 'https://www.linkedin.com/uas/oauth2/accessToken';
+    const XML_PATH_ENABLED = 'customer/inchoo_socialconnect_twitter/enabled';
+    const XML_PATH_CLIENT_ID = 'customer/inchoo_socialconnect_twitter/client_id';
+    const XML_PATH_CLIENT_SECRET = 'customer/inchoo_socialconnect_twitter/client_secret';
 
     protected $clientId = null;
     protected $clientSecret = null;
     protected $redirectUri = null;
-    protected $state = '';
-    protected $scope = array('r_basicprofile', 'r_emailaddress');
-
+    protected $client = null;
     protected $token = null;
 
-    public function __construct($params = array())
-    {
-        if(($this->isEnabled = $this->_isEnabled())) {
-            $this->clientId = $this->_getClientId();
-            $this->clientSecret = $this->_getClientSecret();
-            $this->redirectUri = Mage::getModel('core/url')->sessionUrlVar(
-                Mage::getUrl(self::REDIRECT_URI_ROUTE)
+    public function __construct()
+     {
+         if(($this->isEnabled = $this->_isEnabled())) {
+             $this->clientId = $this->_getClientId();
+             $this->clientSecret = $this->_getClientSecret();
+             $this->redirectUri = Mage::getModel('core/url')->sessionUrlVar(
+                 Mage::getUrl(self::REDIRECT_URI_ROUTE)
+             );
+
+            $this->client = new Zend_Oauth_Consumer(
+                array(
+                    'callbackUrl' => $this->redirectUri,
+                    'siteUrl' => self::OAUTH_URI,
+                    'authorizeUrl' => self::OAUTH_URI.'/authenticate',
+                    'consumerKey' => $this->clientId,
+                    'consumerSecret' => $this->clientSecret
+                )
             );
-
-            if(!empty($params['scope'])) {
-                $this->scope = $params['scope'];
-            }
-
-            if(!empty($params['state'])) {
-                $this->state = $params['state'];
-            }
-        }
+         }
     }
 
     public function isEnabled()
     {
         return (bool) $this->isEnabled;
+    }
+
+    public function getClient()
+    {
+        return $this->client;
     }
 
     public function getClientId()
@@ -90,24 +95,9 @@ class Inchoo_SocialConnect_Model_Linkedin_Client
         return $this->redirectUri;
     }
 
-    public function getScope()
-    {
-        return $this->scope;
-    }
-
-    public function getState()
-    {
-        return $this->state;
-    }
-
-    public function setState($state)
-    {
-        $this->state = $state;
-    }
-
     public function setAccessToken($token)
     {
-        $this->token = json_decode($token);
+        $this->token = unserialize($token);
     }
 
     public function getAccessToken()
@@ -116,96 +106,99 @@ class Inchoo_SocialConnect_Model_Linkedin_Client
             $this->fetchAccessToken();
         }
 
-        return json_encode($this->token);
+        return serialize($this->token);
     }
 
     public function createAuthUrl()
     {
-        $url =
-        self::OAUTH2_AUTH_URI.'?'.
-            http_build_query(
-                array(
-                    'response_type' => 'code',
-                    'client_id' => $this->clientId,
-                    'redirect_uri' => $this->redirectUri,
-                    'state' => $this->state,
-                    'scope' => implode(',', $this->scope)
-                    )
-            );
-        return $url;
+        return Mage::getUrl(self::REQUEST_TOKEN_URI_ROUTE);
     }
 
-    public function api($endpoint, $method = 'GET', $params = array(), $fields = array())
+    public function fetchRequestToken()
     {
-        if(empty($this->token)) {
-            $this->fetchAccessToken();
+        if(!($requestToken = $this->client->getRequestToken())) {
+            throw new Exeption(
+                Mage::helper('inchoo_socialconnect')
+                    ->__('Unable to retrieve request token.')
+            );
         }
 
-        $url = self::OAUTH2_SERVICE_URI.$endpoint;
+        Mage::getSingleton('core/session')
+            ->setTwitterRequestToken(serialize($requestToken));
 
-        if(!empty($params)) {
-            foreach ($params as $key => $value) {
-                $url .= '/'.$key;
-
-                if(!empty($value)) {
-                    $url .= '='.$value;
-                }
-            }
-        }
-
-        if(!empty($fields)) {
-            $url .= ':(' .implode(',', $fields).')';
-        }
-
-        $method = strtoupper($method);
-
-        $params = array_merge(array(
-            'oauth2_access_token' => $this->token->access_token,
-            'format' => 'json'
-        ), $params);
-
-        $response = $this->_httpRequest($url, $method, $params, $fields);
-
-        return $response;
+        $this->client->redirect();
     }
 
     protected function fetchAccessToken()
     {
-        if(!($code = Mage::app()->getRequest()->getParam('code'))) {
+        if (!($params = Mage::app()->getFrontController()->getRequest()->getParams())
+            ||
+            !($requestToken = Mage::getSingleton('core/session')
+                ->getTwitterRequestToken())
+            ) {
             throw new Exception(
                 Mage::helper('inchoo_socialconnect')
                     ->__('Unable to retrieve access code.')
             );
         }
 
-        $response = $this->_httpRequest(
-            self::OAUTH2_TOKEN_URI,
-            'POST',
-            array(
-                'code' => $code,
-                'redirect_uri' => $this->redirectUri,
-                'client_id' => $this->clientId,
-                'client_secret' => $this->clientSecret,
-                'grant_type' => 'authorization_code'
+        if(!($token = $this->client->getAccessToken(
+                    $params,
+                    unserialize($requestToken)
+                )
             )
-        );
+        ) {
+            throw new Exeption(
+                Mage::helper('inchoo_socialconnect')
+                    ->__('Unable to retrieve access token.')
+            );
+        }
 
-        $this->token = $response;
+        Mage::getSingleton('core/session')->unsTwitterRequestToken();
+
+        return $this->token = $token;
+    }
+
+    public function api($endpoint, $method = 'GET', $params = array())
+    {
+        if(empty($this->token)) {
+            throw new Exception(
+                Mage::helper('inchoo_socialconnect')
+                    ->__('Unable to proceed without an access token.')
+            );
+        }
+
+        $url = self::OAUTH2_SERVICE_URI.$endpoint; 
+        
+        $response = $this->_httpRequest($url, strtoupper($method), $params);
+
+        return $response;
     }
 
     protected function _httpRequest($url, $method = 'GET', $params = array())
     {
-        $client = new Zend_Http_Client($url, array('timeout' => 60));
+        $client = $this->token->getHttpClient(
+            array(
+                'callbackUrl' => $this->redirectUri,
+                'siteUrl' => self::OAUTH_URI,
+                'consumerKey' => $this->clientId,
+                'consumerSecret' => $this->clientSecret
+            )
+        );
 
+        $client->setUri($url);
+        
         switch ($method) {
             case 'GET':
+                $client->setMethod(Zend_Http_Client::GET);
                 $client->setParameterGet($params);
                 break;
             case 'POST':
+                $client->setMethod(Zend_Http_Client::POST);
                 $client->setParameterPost($params);
                 break;
             case 'DELETE':
-                $client->setParameterGet($params);
+                $client->setMethod(Zend_Http_Client::DELETE);
                 break;
             default:
                 throw new Exception(
@@ -214,7 +207,7 @@ class Inchoo_SocialConnect_Model_Linkedin_Client
                 );
         }
 
-        $response = $client->request($method);
+        $response = $client->request();
 
         Mage::log($response->getStatus().' - '. $response->getBody());
 
@@ -222,7 +215,7 @@ class Inchoo_SocialConnect_Model_Linkedin_Client
 
         if($response->isError()) {
             $status = $response->getStatus();
-            if(($status == 400 || $status == 401)) {
+            if(($status == 400 || $status == 401 || $status == 429)) {
                 if(isset($decoded_response->error->message)) {
                     $message = $decoded_response->error->message;
                 } else {
@@ -230,7 +223,7 @@ class Inchoo_SocialConnect_Model_Linkedin_Client
                         ->__('Unspecified OAuth error occurred.');
                 }
 
-                throw new Inchoo_SocialConnect_LinkedinOAuthException($message);
+                throw new Inchoo_SocialConnect_TwitterOAuthException($message);
             } else {
                 $message = sprintf(
                     Mage::helper('inchoo_socialconnect')
@@ -266,6 +259,3 @@ class Inchoo_SocialConnect_Model_Linkedin_Client
     }
 
 }
-
-class Inchoo_SocialConnect_LinkedinOAuthException extends Exception
-{}

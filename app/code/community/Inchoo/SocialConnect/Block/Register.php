@@ -46,8 +46,8 @@ class Inchoo_SocialConnect_Block_Register extends Mage_Core_Block_Template
 
         $this->clientGoogle = Mage::getSingleton('inchoo_socialconnect/google_client');
         $this->clientFacebook = Mage::getSingleton('inchoo_socialconnect/facebook_client');
-        $this->clientTwitter = Mage::getSingleton('inchoo_socialconnect/twitter_client');
-        $this->clientLinkedin = Mage::getSingleton('inchoo_socialconnect/linkedin_client');
+        $this->clientTwitter = Mage::getSingleton('inchoo_socialconnect/twitter_oauth_client');
+        $this->clientLinkedin = Mage::getSingleton('inchoo_socialconnect/linkedin_oauth2_client');
 
         if( !$this->_googleEnabled() &&
             !$this->_facebookEnabled() &&

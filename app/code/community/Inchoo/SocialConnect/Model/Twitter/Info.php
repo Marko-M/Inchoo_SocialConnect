@@ -31,47 +31,37 @@
 * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
 */
 
-class Inchoo_SocialConnect_Model_Linkedin_Info extends Varien_Object
+class Inchoo_SocialConnect_Model_Twitter_Info extends Varien_Object
 {
     protected $params = array(
-        '~' => ''
-    );
-
-    protected $fields = array(
-        'id',
-        'first-name',
-        'last-name',
-        'email-address',
-        'picture-url',
-        'public-profile-url',
-        'site-standard-profile-request'
+        'skip_status' => true
     );
 
     /**
-     * LinkedIn client model
+     * Twitter client model
      *
-     * @var Inchoo_SocialConnect_Model_Linkedin_Oauth2_Client
+     * @var Inchoo_SocialConnect_Model_Twitter_Oauth_Client
      */
     protected $client = null;
 
     public function __construct() {
-        $this->client = Mage::getSingleton('inchoo_socialconnect/linkedin_oauth2_client');
+        $this->client = Mage::getSingleton('inchoo_socialconnect/twitter_oauth_client');
         if(!($this->client->isEnabled())) {
             return $this;
         }
     }
 
     /**
-     * Get LinkedIn client model
+     * Get Twitter client model
      *
-     * @return Inchoo_SocialConnect_Model_Linkedin_Oauth2_Client
+     * @return Inchoo_SocialConnect_Model_Twitter_Oauth_Client
      */
     public function getClient()
     {
         return $this->client;
     }
 
-    public function setClient(Inchoo_SocialConnect_Model_Linkedin_Oauth2_Client $client)
+    public function setClient(Inchoo_SocialConnect_Model_Twitter_Oauth_Client $client)
     {
         $this->client = $client;
     }
@@ -82,7 +72,7 @@ class Inchoo_SocialConnect_Model_Linkedin_Info extends Varien_Object
     }
 
     /**
-     * Get LinkedIn client's access token
+     * Get Twitter client's access token
      *
      * @return stdClass
      */
@@ -94,6 +84,9 @@ class Inchoo_SocialConnect_Model_Linkedin_Info extends Varien_Object
     public function load($id = null)
     {
         $this->_load();
+        
+        // Twitter doesn't allow email access trough API
+        $this->setEmail(sprintf('%s@twitter-user.com', strtolower($this->getScreenName())));
 
         return $this;
     }
@@ -101,18 +94,19 @@ class Inchoo_SocialConnect_Model_Linkedin_Info extends Varien_Object
     protected function _load()
     {
         try{
+            $this->client->getAccessToken();
+            
             $response = $this->client->api(
-                '/people',
+                '/account/verify_credentials.json',
                 'GET',
-                $this->params,
-                $this->fields
+                $this->params
             );
 
             foreach ($response as $key => $value) {
                 $this->{$key} = $value;
             }
 
-        } catch(Inchoo_SocialConnect_Linkedin_Oauth2_Exception $e) {
+        } catch(Inchoo_SocialConnect_Twitter_Oauth_Exception $e) {
             $this->_onException($e);
         } catch(Exception $e) {
             $this->_onException($e);
@@ -121,7 +115,7 @@ class Inchoo_SocialConnect_Model_Linkedin_Info extends Varien_Object
 
     protected function _onException($e)
     {
-        if($e instanceof Inchoo_SocialConnect_Linkedin_Oauth2_Exception) {
+        if($e instanceof Inchoo_SocialConnect_Twitter_Oauth_Exception) {
             Mage::getSingleton('core/session')->addNotice($e->getMessage());
         } else {
             Mage::getSingleton('core/session')->addError($e->getMessage());

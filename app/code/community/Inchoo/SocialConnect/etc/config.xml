@@ -37,7 +37,7 @@
 <config>
     <modules>
         <Inchoo_SocialConnect>
-            <version>0.3.1</version>
+            <version>0.3.2</version>
         </Inchoo_SocialConnect>
     </modules>
     <default>
@@ -51,6 +51,9 @@
             <inchoo_socialconnect_twitter>
                 <enabled>0</enabled>
             </inchoo_socialconnect_twitter>
+            <inchoo_socialconnect_linkedin>
+                <enabled>0</enabled>
+            </inchoo_socialconnect_linkedin>
         </customer>
     </default>
     <frontend>
