@@ -57,8 +57,7 @@ class Inchoo_SocialConnect_TwitterController extends Inchoo_SocialConnect_Contro
             return $this;
         }
 
-        $info = Mage::getModel('inchoo_socialconnect/twitter_info')
-            ->load();
+        $info = Mage::getModel('inchoo_socialconnect/twitter_info')->load();
 
         $token = $info->getClient()->getAccessToken();
 

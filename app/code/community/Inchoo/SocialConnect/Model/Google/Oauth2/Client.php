@@ -31,7 +31,7 @@
 * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
 */
 
-class Inchoo_SocialConnect_Model_Google_Client
+class Inchoo_SocialConnect_Model_Google_Oauth2_Client
 {
     const REDIRECT_URI_ROUTE = 'socialconnect/google/connect';
 
@@ -239,7 +239,7 @@ class Inchoo_SocialConnect_Model_Google_Client
                 'client_secret' => $this->clientSecret,
                 'grant_type' => 'authorization_code'
             )
-        ); 
+        );
 
         $response->created = time();
 
@@ -314,7 +314,7 @@ class Inchoo_SocialConnect_Model_Google_Client
                         ->__('Unspecified OAuth error occurred.');
                 }
 
-                throw new Inchoo_SocialConnect_GoogleOAuthException($message);
+                throw new Inchoo_SocialConnect_Google_OAuth2_Exception($message);
             } else {
                 $message = sprintf(
                     Mage::helper('inchoo_socialconnect')
@@ -350,6 +350,3 @@ class Inchoo_SocialConnect_Model_Google_Client
     }
 
 }
-
-class Inchoo_SocialConnect_GoogleOAuthException extends Exception
-{}

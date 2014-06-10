@@ -78,8 +78,7 @@ class Inchoo_SocialConnect_LinkedinController extends Inchoo_SocialConnect_Contr
         if ($code) {
             // Linkedin API green light - proceed
 
-            $info = Mage::getModel('inchoo_socialconnect/linkedin_info')
-                ->load();
+            $info = Mage::getModel('inchoo_socialconnect/linkedin_info')->load();
             /* @var $info Inchoo_SocialConnect_Model_Linkedin_Userinfo */
 
             $token = $info->getClient()->getAccessToken();

@@ -57,8 +57,8 @@ class Inchoo_SocialConnect_AccountController extends Mage_Core_Controller_Front_
 
     public function googleAction()
     {
-        $userInfo = Mage::getSingleton('inchoo_socialconnect/google_userinfo')
-                ->getUserInfo();
+        $userInfo = Mage::getSingleton('inchoo_socialconnect/google_info_user')
+                ->load();
 
         Mage::register('inchoo_socialconnect_google_userinfo', $userInfo);
 

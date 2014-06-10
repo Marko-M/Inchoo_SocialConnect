@@ -36,10 +36,10 @@
         <h1><?php echo $this->__('Google Connect') ?></h1>
     </div>
 
-    <?php if($this->_hasUserInfo()): ?>
+    <?php if($this->_hasData()): ?>
 
     <?php
-        $facebookId = $this->_getGoogleId();
+        $googleId = $this->_getGoogleId();
         $status = $this->_getStatus();
         $email = $this->_getEmail();
         $picture = $this->_getPicture();
@@ -50,15 +50,15 @@
 
     <div class="col3-set">
         <div class="box">
-            <div class="box-content">        
-                <div class="col-1">                    
+            <div class="box-content">
+                <div class="col-1">
                     <?php if(!empty($picture)): ?>
                     <p>
                         <img src="<?php echo $picture; ?>" alt="<?php echo $this->htmlEscape($name); ?>" />
                     </p>
                     <?php endif; ?>
                 </div>
-                <div class="col-2">                          
+                <div class="col-2">
                     <?php if(!empty($status)): ?>
                     <p>
                         <?php printf($this->__('Connected as %s', '<strong>'.$status.'</strong>')) ?>
@@ -68,10 +68,10 @@
                     <p>
                         <?php printf($this->__('Email: %s', '<strong>'.$email.'</strong>')) ?>
                     </p>
-                    <?php endif; ?>                
-                    <?php if(!empty($facebookId)): ?>
+                    <?php endif; ?>
+                    <?php if(!empty($googleId)): ?>
                     <p>
-                        <?php printf($this->__('Google #: %s', '<strong>'.$facebookId.'</strong>')) ?>
+                        <?php printf($this->__('Google #: %s', '<strong>'.$googleId.'</strong>')) ?>
                     </p>
                     <?php endif; ?>
                     <?php if(!empty($gender)): ?>
@@ -83,8 +83,8 @@
                     <p>
                         <?php printf($this->__('Birthday: %s', '<strong>'.$birthday.'</strong>')) ?>
                     </p>
-                    <?php endif; ?>                
-                </div>            
+                    <?php endif; ?>
+                </div>
                 <div class="col-3">
                     <?php echo $this->getChildHtml('inchoo_socialconnect_account_google_button'); ?>
                 </div>
@@ -104,5 +104,5 @@
             </div>
         </div>
     </div>
-    <?php endif; ?>    
+    <?php endif; ?>
 </div>

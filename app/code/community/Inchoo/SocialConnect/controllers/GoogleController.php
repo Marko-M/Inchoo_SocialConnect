@@ -77,17 +77,18 @@ class Inchoo_SocialConnect_GoogleController extends Inchoo_SocialConnect_Control
 
         if ($code) {
             // Google API green light - proceed
-            $client = Mage::getSingleton('inchoo_socialconnect/google_client');
 
-            $userInfo = $client->api('/userinfo');
-            $token = $client->getAccessToken();
+            $info = Mage::getModel('inchoo_socialconnect/google_info')->load();
+            /* @var $info Inchoo_SocialConnect_Model_Google_Info */
+
+            $token = $info->getClient()->getAccessToken();
 
             $customersByGoogleId = Mage::helper('inchoo_socialconnect/google')
-                ->getCustomersByGoogleId($userInfo->id);
+                ->getCustomersByGoogleId($info->getId());
 
             if(Mage::getSingleton('customer/session')->isLoggedIn()) {
                 // Logged in user
-                if($customersByGoogleId->count()) {
+                if($customersByGoogleId->getSize()) {
                     // Google account already connected to other account - deny
                     Mage::getSingleton('core/session')
                         ->addNotice(
@@ -102,7 +103,7 @@ class Inchoo_SocialConnect_GoogleController extends Inchoo_SocialConnect_Control
 
                 Mage::helper('inchoo_socialconnect/google')->connectByGoogleId(
                     $customer,
-                    $userInfo->id,
+                    $info->getId(),
                     $token
                 );
 
@@ -113,7 +114,7 @@ class Inchoo_SocialConnect_GoogleController extends Inchoo_SocialConnect_Control
                 return $this;
             }
 
-            if($customersByGoogleId->count()) {
+            if($customersByGoogleId->getSize()) {
                 // Existing connected user - login
                 $customer = $customersByGoogleId->getFirstItem();
 
@@ -128,15 +129,15 @@ class Inchoo_SocialConnect_GoogleController extends Inchoo_SocialConnect_Control
             }
 
             $customersByEmail = Mage::helper('inchoo_socialconnect/facebook')
-                ->getCustomersByEmail($userInfo->email);
+                ->getCustomersByEmail($info->getEmail());
 
-            if($customersByEmail->count())  {
+            if($customersByEmail->getSize())  {
                 // Email account already exists - attach, login
                 $customer = $customersByEmail->getFirstItem();
 
                 Mage::helper('inchoo_socialconnect/google')->connectByGoogleId(
                     $customer,
-                    $userInfo->id,
+                    $info->getId(),
                     $token
                 );
 
@@ -148,23 +149,23 @@ class Inchoo_SocialConnect_GoogleController extends Inchoo_SocialConnect_Control
             }
 
             // New connection - create, attach, login
-            if(empty($userInfo->given_name)) {
+            if(empty($info->getGivenName())) {
                 throw new Exception(
                     $this->__('Sorry, could not retrieve your Google first name. Please try again.')
                 );
             }
 
-            if(empty($userInfo->family_name)) {
+            if(empty($info->getFamilyName())) {
                 throw new Exception(
                     $this->__('Sorry, could not retrieve your Google last name. Please try again.')
                 );
             }
 
             Mage::helper('inchoo_socialconnect/google')->connectByCreatingAccount(
-                $userInfo->email,
-                $userInfo->given_name,
-                $userInfo->family_name,
-                $userInfo->id,
+                $info->getEmail(),
+                $info->getGivenName(),
+                $info->getFamilyName(),
+                $info->getId(),
                 $token
             );
 

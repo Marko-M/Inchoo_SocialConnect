@@ -33,7 +33,16 @@
 
 class Inchoo_SocialConnect_Block_Linkedin_Account extends Mage_Core_Block_Template
 {
+    /**
+     *
+     * @var Inchoo_SocialConnect_Model_Linkedin_Oauth2_Client
+     */
     protected $client = null;
+    
+    /**
+     *
+     * @var Inchoo_SocialConnect_Model_Linkedin_Info_User
+     */
     protected $userInfo = null;
 
     protected function _construct() {

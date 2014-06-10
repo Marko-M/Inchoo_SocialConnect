@@ -31,39 +31,37 @@
 * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
 */
 
-class Inchoo_SocialConnect_Model_Twitter_Info extends Varien_Object
+class Inchoo_SocialConnect_Model_Google_Info extends Varien_Object
 {
-    protected $params = array(
-        'skip_status' => true
-    );
+    protected $params = array();
 
     /**
-     * Twitter client model
+     * Google client model
      *
-     * @var Inchoo_SocialConnect_Model_Twitter_Oauth_Client
+     * @var Inchoo_SocialConnect_Model_Google_Oauth2_Client
      */
     protected $client = null;
 
     public function _construct() {
         parent::_construct();
-        
-        $this->client = Mage::getSingleton('inchoo_socialconnect/twitter_oauth_client');
+
+        $this->client = Mage::getSingleton('inchoo_socialconnect/google_oauth2_client');
         if(!($this->client->isEnabled())) {
             return $this;
         }
     }
 
-    /**
-     * Get Twitter client model
+        /**
+     * Get Google client model
      *
-     * @return Inchoo_SocialConnect_Model_Twitter_Oauth_Client
+     * @return Inchoo_SocialConnect_Model_Google_Oauth2_Client
      */
     public function getClient()
     {
         return $this->client;
     }
 
-    public function setClient(Inchoo_SocialConnect_Model_Twitter_Oauth_Client $client)
+    public function setClient(Inchoo_SocialConnect_Model_Google_Oauth2_Client $client)
     {
         $this->client = $client;
     }
@@ -74,7 +72,7 @@ class Inchoo_SocialConnect_Model_Twitter_Info extends Varien_Object
     }
 
     /**
-     * Get Twitter client's access token
+     * Get Google client's access token
      *
      * @return stdClass
      */
@@ -86,9 +84,6 @@ class Inchoo_SocialConnect_Model_Twitter_Info extends Varien_Object
     public function load($id = null)
     {
         $this->_load();
-        
-        // Twitter doesn't allow email access trough API
-        $this->setEmail(sprintf('%s@twitter-user.com', strtolower($this->getScreenName())));
 
         return $this;
     }
@@ -96,10 +91,8 @@ class Inchoo_SocialConnect_Model_Twitter_Info extends Varien_Object
     protected function _load()
     {
         try{
-            $this->client->getAccessToken();
-            
             $response = $this->client->api(
-                '/account/verify_credentials.json',
+                '/userinfo',
                 'GET',
                 $this->params
             );
@@ -108,7 +101,7 @@ class Inchoo_SocialConnect_Model_Twitter_Info extends Varien_Object
                 $this->{$key} = $value;
             }
 
-        } catch(Inchoo_SocialConnect_Twitter_Oauth_Exception $e) {
+        } catch(Inchoo_SocialConnect_Google_OAuth2_Exception $e) {
             $this->_onException($e);
         } catch(Exception $e) {
             $this->_onException($e);
@@ -117,7 +110,7 @@ class Inchoo_SocialConnect_Model_Twitter_Info extends Varien_Object
 
     protected function _onException($e)
     {
-        if($e instanceof Inchoo_SocialConnect_Twitter_Oauth_Exception) {
+        if($e instanceof Inchoo_SocialConnect_Google_OAuth2_Exception) {
             Mage::getSingleton('core/session')->addNotice($e->getMessage());
         } else {
             Mage::getSingleton('core/session')->addError($e->getMessage());

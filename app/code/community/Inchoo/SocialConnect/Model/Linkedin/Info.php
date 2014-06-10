@@ -54,7 +54,9 @@ class Inchoo_SocialConnect_Model_Linkedin_Info extends Varien_Object
      */
     protected $client = null;
 
-    public function __construct() {
+    public function _construct() {
+        parent::_construct();
+        
         $this->client = Mage::getSingleton('inchoo_socialconnect/linkedin_oauth2_client');
         if(!($this->client->isEnabled())) {
             return $this;
