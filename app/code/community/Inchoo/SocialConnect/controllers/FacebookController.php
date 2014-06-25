@@ -77,17 +77,20 @@ class Inchoo_SocialConnect_FacebookController extends Inchoo_SocialConnect_Contr
 
         if ($code) {
             // Facebook API green light - proceed
-            $client = Mage::getSingleton('inchoo_socialconnect/facebook_client');
+            $info = Mage::getModel('inchoo_socialconnect/facebook_info')->load();
+            /* @var $info Inchoo_SocialConnect_Model_Facebook_Info */
 
-            $userInfo = $client->api('/me');
-            $token = $client->getAccessToken();
+            $token = $info->getClient()->getAccessToken();
+
+            $customersByGoogleId = Mage::helper('inchoo_socialconnect/google')
+                ->getCustomersByGoogleId($info->getId());
 
             $customersByFacebookId = Mage::helper('inchoo_socialconnect/facebook')
-                ->getCustomersByFacebookId($userInfo->id);
+                ->getCustomersByFacebookId($info->getId());
 
             if(Mage::getSingleton('customer/session')->isLoggedIn()) {
                 // Logged in user
-                if($customersByFacebookId->count()) {
+                if($customersByFacebookId->getSize()) {
                     // Facebook account already connected to other account - deny
                     Mage::getSingleton('core/session')
                         ->addNotice(
@@ -102,7 +105,7 @@ class Inchoo_SocialConnect_FacebookController extends Inchoo_SocialConnect_Contr
 
                 Mage::helper('inchoo_socialconnect/facebook')->connectByFacebookId(
                     $customer,
-                    $userInfo->id,
+                    $info->getId(),
                     $token
                 );
 
@@ -113,7 +116,7 @@ class Inchoo_SocialConnect_FacebookController extends Inchoo_SocialConnect_Contr
                 return $this;
             }
 
-            if($customersByFacebookId->count()) {
+            if($customersByFacebookId->getSize()) {
                 // Existing connected user - login
                 $customer = $customersByFacebookId->getFirstItem();
 
@@ -128,15 +131,15 @@ class Inchoo_SocialConnect_FacebookController extends Inchoo_SocialConnect_Contr
             }
 
             $customersByEmail = Mage::helper('inchoo_socialconnect/facebook')
-                ->getCustomersByEmail($userInfo->email);
+                ->getCustomersByEmail($info->getEmail());
 
-            if($customersByEmail->count()) {
+            if($customersByEmail->getSize()) {
                 // Email account already exists - attach, login
                 $customer = $customersByEmail->getFirstItem();
 
                 Mage::helper('inchoo_socialconnect/facebook')->connectByFacebookId(
                     $customer,
-                    $userInfo->id,
+                    $info->getId(),
                     $token
                 );
 
@@ -148,23 +151,23 @@ class Inchoo_SocialConnect_FacebookController extends Inchoo_SocialConnect_Contr
             }
 
             // New connection - create, attach, login
-            if(empty($userInfo->first_name)) {
+            if(empty($info->getFirstName())) {
                 throw new Exception(
                     $this->__('Sorry, could not retrieve your Facebook first name. Please try again.')
                 );
             }
 
-            if(empty($userInfo->last_name)) {
+            if(empty($info->getLastName())) {
                 throw new Exception(
                     $this->__('Sorry, could not retrieve your Facebook last name. Please try again.')
                 );
             }
 
             Mage::helper('inchoo_socialconnect/facebook')->connectByCreatingAccount(
-                $userInfo->email,
-                $userInfo->first_name,
-                $userInfo->last_name,
-                $userInfo->id,
+                $info->getEmail(),
+                $info->getFirstName(),
+                $info->getLastName(),
+                $info->getId(),
                 $token
             );
 

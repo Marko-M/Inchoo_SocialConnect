@@ -56,7 +56,7 @@ class Inchoo_SocialConnect_Block_Linkedin_Button extends Mage_Core_Block_Templat
         $this->userInfo = Mage::registry('inchoo_socialconnect_linkedin_userinfo');
 
         // CSRF protection
-        Mage::getSingleton('core/session')->setLinkedinCsrf($csrf = md5(uniqid(rand(), TRUE)));
+        Mage::getSingleton('core/session')->setLinkedinCsrf($csrf = md5(uniqid(rand(), true)));
         $this->client->setState($csrf);
 
         Mage::getSingleton('customer/session')

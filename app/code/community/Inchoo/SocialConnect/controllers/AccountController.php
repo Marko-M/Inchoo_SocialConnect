@@ -68,8 +68,8 @@ class Inchoo_SocialConnect_AccountController extends Mage_Core_Controller_Front_
 
     public function facebookAction()
     {
-        $userInfo = Mage::getSingleton('inchoo_socialconnect/facebook_userinfo')
-            ->getUserInfo();
+        $userInfo = Mage::getSingleton('inchoo_socialconnect/facebook_info_user')
+            ->load();
 
         Mage::register('inchoo_socialconnect_facebook_userinfo', $userInfo);
 

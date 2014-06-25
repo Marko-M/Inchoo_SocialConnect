@@ -52,8 +52,10 @@ class Inchoo_SocialConnect_Model_Linkedin_Info_User extends Inchoo_SocialConnect
         if(is_null($id) && Mage::getSingleton('customer/session')->isLoggedIn()) {
             $this->customer = Mage::getSingleton('customer/session')->getCustomer();
         } else if(is_int($id)){
-            $this->params = array('id' => $id);
+            
             $this->customer = Mage::getModel('customer/customer')->load($id);
+            
+            // TODO: Implement
         }
 
         if(!$this->customer->getId()) {

@@ -31,7 +31,7 @@
 * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
 */
 
-class Inchoo_SocialConnect_Model_Facebook_Client
+class Inchoo_SocialConnect_Model_Facebook_Oauth2_Client
 {
     const REDIRECT_URI_ROUTE = 'socialconnect/facebook/connect';
 
@@ -227,7 +227,7 @@ class Inchoo_SocialConnect_Model_Facebook_Client
                         ->__('Unspecified OAuth error occurred.');
                 }
 
-                throw new Inchoo_SocialConnect_FacebookOAuthException($message);
+                throw new Inchoo_SocialConnect_Facebook_OAuth2_Exception($message);
             } else {
                 $message = sprintf(
                     Mage::helper('inchoo_socialconnect')
@@ -263,6 +263,3 @@ class Inchoo_SocialConnect_Model_Facebook_Client
     }
 
 }
-
-class Inchoo_SocialConnect_FacebookOAuthException extends Exception
-{}

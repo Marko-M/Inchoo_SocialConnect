@@ -31,60 +31,90 @@
 * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
 */
 
-class Inchoo_SocialConnect_Block_Facebook_Button extends Mage_Core_Block_Template
+class Inchoo_SocialConnect_Model_Facebook_Info extends Varien_Object
 {
+    protected $params = array();
+
     /**
+     * Facebook client model
      *
      * @var Inchoo_SocialConnect_Model_Facebook_Oauth2_Client
      */
     protected $client = null;
 
-    /**
-     *
-     * @var Inchoo_SocialConnect_Model_Facebook_Info_User
-     */
-    protected $userInfo = null;
-
-    protected function _construct() {
+    public function _construct() {
         parent::_construct();
 
         $this->client = Mage::getSingleton('inchoo_socialconnect/facebook_oauth2_client');
         if(!($this->client->isEnabled())) {
-            return;
-        }
-
-        $this->userInfo = Mage::registry('inchoo_socialconnect_facebook_userinfo');
-
-        // CSRF protection
-        Mage::getSingleton('core/session')->setFacebookCsrf($csrf = md5(uniqid(rand(), true)));
-        $this->client->setState($csrf);
-
-        Mage::getSingleton('customer/session')
-            ->setSocialConnectRedirect(Mage::helper('core/url')->getCurrentUrl());
-
-        $this->setTemplate('inchoo/socialconnect/facebook/button.phtml');
-    }
-
-    protected function _getButtonUrl()
-    {
-        if(is_null($this->userInfo) || !$this->userInfo->hasData()) {
-            return $this->client->createAuthUrl();
-        } else {
-            return $this->getUrl('socialconnect/facebook/disconnect');
+            return $this;
         }
     }
 
-    protected function _getButtonText()
+        /**
+     * Get Facebook client model
+     *
+     * @return Inchoo_SocialConnect_Model_Facebook_Oauth2_Client
+     */
+    public function getClient()
     {
-        if(is_null($this->userInfo) || !$this->userInfo->hasData()) {
-            if(!($text = Mage::registry('inchoo_socialconnect_button_text'))){
-                $text = $this->__('Connect');
+        return $this->client;
+    }
+
+    public function setClient(Inchoo_SocialConnect_Model_Facebook_Oauth2_Client $client)
+    {
+        $this->client = $client;
+    }
+
+    public function setAccessToken($token)
+    {
+        $this->client->setAccessToken($token);
+    }
+
+    /**
+     * Get Facebook client's access token
+     *
+     * @return stdClass
+     */
+    public function getAccessToken()
+    {
+        return $this->client->getAccessToken();
+    }
+
+    public function load($id = null)
+    {
+        $this->_load();
+
+        return $this;
+    }
+
+    protected function _load()
+    {
+        try{
+            $response = $this->client->api(
+                '/me',
+                'GET',
+                $this->params
+            );
+
+            foreach ($response as $key => $value) {
+                $this->{$key} = $value;
             }
-        } else {
-            $text = $this->__('Disconnect');
-        }
 
-        return $text;
+        } catch(Inchoo_SocialConnect_Facebook_OAuth2_Exception $e) {
+            $this->_onException($e);
+        } catch(Exception $e) {
+            $this->_onException($e);
+        }
+    }
+
+    protected function _onException($e)
+    {
+        if($e instanceof Inchoo_SocialConnect_Facebook_OAuth2_Exception) {
+            Mage::getSingleton('core/session')->addNotice($e->getMessage());
+        } else {
+            Mage::getSingleton('core/session')->addError($e->getMessage());
+        }
     }
 
 }

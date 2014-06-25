@@ -53,6 +53,8 @@ class Inchoo_SocialConnect_Model_Twitter_Info_User extends Inchoo_SocialConnect_
             $this->customer = Mage::getSingleton('customer/session')->getCustomer();
         } else if(is_int($id)) {
             $this->customer = Mage::getModel('customer/customer')->load($id);
+            
+            // TODO: Implement
         }
 
         if(!$this->customer->getId()) {

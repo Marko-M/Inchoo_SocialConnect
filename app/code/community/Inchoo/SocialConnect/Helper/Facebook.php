@@ -35,8 +35,9 @@ class Inchoo_SocialConnect_Helper_Facebook extends Mage_Core_Helper_Abstract
 {
 
     public function disconnect(Mage_Customer_Model_Customer $customer) {
-        $client = Mage::getSingleton('inchoo_socialconnect/facebook_client');
-
+        $client = Mage::getSingleton('inchoo_socialconnect/facebook_oauth2_client');
+        
+        // TODO: Move into Inchoo_SocialConnect_Model_Facebook_Info_User
         try {
             $client->setAccessToken($customer->getInchooSocialconnectFtoken());
             $client->api('/me/permissions', 'DELETE');

@@ -33,8 +33,16 @@
 
 class Inchoo_SocialConnect_Block_Google_Button extends Mage_Core_Block_Template
 {
+    /**
+     *
+     * @var Inchoo_SocialConnect_Model_Google_Oauth2_Client
+     */
     protected $client = null;
-    protected $oauth2 = null;
+    
+    /**
+     *
+     * @var Inchoo_SocialConnect_Model_Google_Info_User
+     */
     protected $userInfo = null;
 
     protected function _construct() {
@@ -48,7 +56,7 @@ class Inchoo_SocialConnect_Block_Google_Button extends Mage_Core_Block_Template
         $this->userInfo = Mage::registry('inchoo_socialconnect_google_userinfo');
 
         // CSRF protection
-        Mage::getSingleton('core/session')->setGoogleCsrf($csrf = md5(uniqid(rand(), TRUE)));
+        Mage::getSingleton('core/session')->setGoogleCsrf($csrf = md5(uniqid(rand(), true)));
         $this->client->setState($csrf);
 
         Mage::getSingleton('customer/session')

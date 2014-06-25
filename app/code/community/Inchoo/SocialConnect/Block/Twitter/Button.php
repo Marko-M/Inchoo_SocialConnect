@@ -33,7 +33,16 @@
 
 class Inchoo_SocialConnect_Block_Twitter_Button extends Mage_Core_Block_Template
 {
+    /**
+     *
+     * @var Inchoo_SocialConnect_Model_Twitter_Oauth_Client
+     */
     protected $client = null;
+    
+    /**
+     *
+     * @var Inchoo_SocialConnect_Model_Twitter_Info_User
+     */
     protected $userInfo = null;
 
     protected function _construct() {

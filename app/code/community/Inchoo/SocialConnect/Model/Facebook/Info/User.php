@@ -31,9 +31,13 @@
 * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
 */
 
-class Inchoo_SocialConnect_Model_Google_Info_User extends Inchoo_SocialConnect_Model_Google_Info
+class Inchoo_SocialConnect_Model_Facebook_Info_User extends Inchoo_SocialConnect_Model_Facebook_Info
 {
     
+    protected $params = array(
+        'fields' => 'id,name,first_name,last_name,link,birthday,gender,email,picture.type(large)'
+    );    
+
     /**
      *
      * @var type Mage_Core_Model_Customer
@@ -45,7 +49,7 @@ class Inchoo_SocialConnect_Model_Google_Info_User extends Inchoo_SocialConnect_M
      * Load customer user info
      *
      * @param null|int $id Customer Id
-     * @return Inchoo_SocialConnect_Model_Google_Userinfo
+     * @return Inchoo_SocialConnect_Model_Facebook_Userinfo
      */
     public function load($id = null)
     {
@@ -61,12 +65,12 @@ class Inchoo_SocialConnect_Model_Google_Info_User extends Inchoo_SocialConnect_M
             return $this;
         }
 
-        if(!($socialconnectGid = $this->customer->getInchooSocialconnectGid()) ||
-                !($socialconnectGtoken = $this->customer->getInchooSocialconnectGtoken())) {
+        if(!($socialconnectFid = $this->customer->getInchooSocialconnectFid()) ||
+                !($socialconnectFtoken = $this->customer->getInchooSocialconnectFtoken())) {
             return $this;
         }
 
-        $this->setAccessToken($socialconnectGtoken);
+        $this->setAccessToken($socialconnectFtoken);
         $this->_load();
 
         return $this;
@@ -75,8 +79,8 @@ class Inchoo_SocialConnect_Model_Google_Info_User extends Inchoo_SocialConnect_M
     protected function _onException($e) {
         parent::_onException($e);
 
-        $helper = Mage::helper('inchoo_socialconnect/google');
-        /* @var $helper Inchoo_SocialConnect_Helper_Google */
+        $helper = Mage::helper('inchoo_socialconnect/facebook');
+        /* @var $helper Inchoo_SocialConnect_Helper_Facebook */
 
         $helper->disconnect($this->customer);
     }
