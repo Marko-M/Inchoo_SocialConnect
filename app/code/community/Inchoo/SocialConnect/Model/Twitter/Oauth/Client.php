@@ -209,7 +209,7 @@ class Inchoo_SocialConnect_Model_Twitter_Oauth_Client
 
         $response = $client->request();
 
-        Mage::log($response->getStatus().' - '. $response->getBody());
+        Inchoo_SocialConnect_Helper_Data::log($response->getStatus().' - '. $response->getBody());
 
         $decoded_response = json_decode($response->getBody());
 
