@@ -82,9 +82,6 @@ class Inchoo_SocialConnect_FacebookController extends Inchoo_SocialConnect_Contr
 
             $token = $info->getClient()->getAccessToken();
 
-            $customersByGoogleId = Mage::helper('inchoo_socialconnect/google')
-                ->getCustomersByGoogleId($info->getId());
-
             $customersByFacebookId = Mage::helper('inchoo_socialconnect/facebook')
                 ->getCustomersByFacebookId($info->getId());
 
