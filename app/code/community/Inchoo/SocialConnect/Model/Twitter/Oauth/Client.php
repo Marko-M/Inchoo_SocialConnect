@@ -223,7 +223,7 @@ class Inchoo_SocialConnect_Model_Twitter_Oauth_Client
                         ->__('Unspecified OAuth error occurred.');
                 }
 
-                throw new Inchoo_SocialConnect_TwitterOAuthException($message);
+                throw new Inchoo_SocialConnect_Model_Twitter_OAuth_Exception($message);
             } else {
                 $message = sprintf(
                     Mage::helper('inchoo_socialconnect')
