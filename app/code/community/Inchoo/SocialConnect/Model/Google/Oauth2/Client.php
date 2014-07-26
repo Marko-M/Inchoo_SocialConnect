@@ -221,19 +221,19 @@ class Inchoo_SocialConnect_Model_Google_Oauth2_Client
     }
 
     protected function fetchAccessToken()
-    {
-        if(empty($_REQUEST['code'])) {
+    {        
+        if(!($code = Mage::app()->getRequest()->getParam('code'))) {
             throw new Exception(
                 Mage::helper('inchoo_socialconnect')
                     ->__('Unable to retrieve access code.')
             );
         }
-
+        
         $response = $this->_httpRequest(
             self::OAUTH2_TOKEN_URI,
             'POST',
             array(
-                'code' => $_REQUEST['code'],
+                'code' => $code,
                 'redirect_uri' => $this->redirectUri,
                 'client_id' => $this->clientId,
                 'client_secret' => $this->clientSecret,
