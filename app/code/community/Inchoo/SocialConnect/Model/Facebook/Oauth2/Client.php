@@ -227,7 +227,7 @@ class Inchoo_SocialConnect_Model_Facebook_Oauth2_Client
                         ->__('Unspecified OAuth error occurred.');
                 }
 
-                throw new Inchoo_SocialConnect_Model_Facebook_OAuth2_Exception($message);
+                throw new Inchoo_SocialConnect_Model_Facebook_Oauth2_Exception($message);
             } else {
                 $message = sprintf(
                     Mage::helper('inchoo_socialconnect')
