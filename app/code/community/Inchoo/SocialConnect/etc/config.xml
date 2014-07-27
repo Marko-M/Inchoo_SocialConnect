@@ -37,7 +37,7 @@
 <config>
     <modules>
         <Inchoo_SocialConnect>
-            <version>0.3.2</version>
+            <version>0.3.3</version>
         </Inchoo_SocialConnect>
     </modules>
     <default>

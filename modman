@@ -6,3 +6,5 @@ skin/frontend/base/default/inchoo_socialconnect/                  skin/frontend/
 app/locale/da_DK/Inchoo_SocialConnect.csv                         app/locale/da_DK/Inchoo_SocialConnect.csv
 app/locale/en_US/Inchoo_SocialConnect.csv                         app/locale/en_US/Inchoo_SocialConnect.csv
 app/locale/sl_SI/Inchoo_SocialConnect.csv                         app/locale/sl_SI/Inchoo_SocialConnect.csv
+app/locale/de_DE/Inchoo_SocialConnect.csv                         app/locale/de_DE/Inchoo_SocialConnect.csv
+app/locale/fr_FR/Inchoo_SocialConnect.csv                         app/locale/fr_FR/Inchoo_SocialConnect.csv
