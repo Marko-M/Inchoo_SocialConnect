@@ -31,30 +31,23 @@
 * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
 */
 
-class Inchoo_SocialConnect_Model_Google_Client
+class Inchoo_SocialConnect_Model_Linkedin_Oauth2_Client
 {
-    const REDIRECT_URI_ROUTE = 'socialconnect/google/connect';
+    const REDIRECT_URI_ROUTE = 'socialconnect/linkedin/connect';
 
-    const XML_PATH_ENABLED = 'customer/inchoo_socialconnect_google/enabled';
-    const XML_PATH_CLIENT_ID = 'customer/inchoo_socialconnect_google/client_id';
-    const XML_PATH_CLIENT_SECRET = 'customer/inchoo_socialconnect_google/client_secret';
+    const XML_PATH_ENABLED = 'customer/inchoo_socialconnect_linkedin/enabled';
+    const XML_PATH_CLIENT_ID = 'customer/inchoo_socialconnect_linkedin/client_id';
+    const XML_PATH_CLIENT_SECRET = 'customer/inchoo_socialconnect_linkedin/client_secret';
 
-    const OAUTH2_REVOKE_URI = 'https://accounts.google.com/o/oauth2/revoke';
-    const OAUTH2_TOKEN_URI = 'https://accounts.google.com/o/oauth2/token';
-    const OAUTH2_AUTH_URI = 'https://accounts.google.com/o/oauth2/auth';
-    const OAUTH2_SERVICE_URI = 'https://www.googleapis.com/oauth2/v2';
+    const OAUTH2_SERVICE_URI = 'https://api.linkedin.com/v1';
+    const OAUTH2_AUTH_URI = 'https://www.linkedin.com/uas/oauth2/authorization';
+    const OAUTH2_TOKEN_URI = 'https://www.linkedin.com/uas/oauth2/accessToken';
 
-    protected $isEnabled = null;
     protected $clientId = null;
     protected $clientSecret = null;
     protected $redirectUri = null;
     protected $state = '';
-    protected $scope = array(
-        'https://www.googleapis.com/auth/userinfo.profile',
-        'https://www.googleapis.com/auth/userinfo.email',
-    );
-    protected $access = 'offline';
-    protected $prompt = 'auto';
+    protected $scope = array('r_basicprofile', 'r_emailaddress');
 
     protected $token = null;
 
@@ -73,14 +66,6 @@ class Inchoo_SocialConnect_Model_Google_Client
 
             if(!empty($params['state'])) {
                 $this->state = $params['state'];
-            }
-
-            if(!empty($params['access'])) {
-                $this->access = $params['access'];
-            }
-
-            if(!empty($params['prompt'])) {
-                $this->prompt = $params['prompt'];
             }
         }
     }
@@ -120,26 +105,6 @@ class Inchoo_SocialConnect_Model_Google_Client
         $this->state = $state;
     }
 
-    public function getAccess()
-    {
-        return $this->access;
-    }
-
-    public function setAccess($access)
-    {
-        $this->access = $access;
-    }
-
-    public function getPrompt()
-    {
-        return $this->prompt;
-    }
-
-    public function setPrompt($prompt)
-    {
-        $this->access = $prompt;
-    }
-
     public function setAccessToken($token)
     {
         $this->token = json_decode($token);
@@ -149,8 +114,6 @@ class Inchoo_SocialConnect_Model_Google_Client
     {
         if(empty($this->token)) {
             $this->fetchAccessToken();
-        } else if($this->isAccessTokenExpired()) {
-            $this->refreshAccessToken();
         }
 
         return json_encode($this->token);
@@ -163,66 +126,52 @@ class Inchoo_SocialConnect_Model_Google_Client
             http_build_query(
                 array(
                     'response_type' => 'code',
-                    'redirect_uri' => $this->redirectUri,
                     'client_id' => $this->clientId,
-                    'scope' => implode(' ', $this->scope),
+                    'redirect_uri' => $this->redirectUri,
                     'state' => $this->state,
-                    'access_type' => $this->access,
-                    'approval_prompt' => $this->prompt
+                    'scope' => implode(',', $this->scope)
                     )
             );
         return $url;
     }
 
-    public function api($endpoint, $method = 'GET', $params = array())
+    public function api($endpoint, $method = 'GET', $params = array(), $fields = array())
     {
         if(empty($this->token)) {
             $this->fetchAccessToken();
-        } else if($this->isAccessTokenExpired()) {
-            $this->refreshAccessToken();
         }
 
         $url = self::OAUTH2_SERVICE_URI.$endpoint;
 
+        if(!empty($params)) {
+            foreach ($params as $key => $value) {
+                $url .= '/'.$key;
+
+                if(!empty($value)) {
+                    $url .= '='.$value;
+                }
+            }
+        }
+
+        if(!empty($fields)) {
+            $url .= ':(' .implode(',', $fields).')';
+        }
+
         $method = strtoupper($method);
 
         $params = array_merge(array(
-            'access_token' => $this->token->access_token
+            'oauth2_access_token' => $this->token->access_token,
+            'format' => 'json'
         ), $params);
 
-        $response = $this->_httpRequest($url, $method, $params);
+        $response = $this->_httpRequest($url, $method, $params, $fields);
 
         return $response;
     }
 
-    public function revokeToken()
-    {
-        if(empty($this->token)) {
-            throw new Exception(
-                Mage::helper('inchoo_socialconnect')
-                    ->__('No access token available.')
-            );
-        }
-
-        if(empty($this->token->refresh_token)) {
-            throw new Exception(
-                Mage::helper('inchoo_socialconnect')
-                    ->__('No refresh token, nothing to revoke.')
-            );
-        }
-
-        $this->_httpRequest(
-            self::OAUTH2_REVOKE_URI,
-            'POST',
-           array(
-               'token' => $this->token->refresh_token
-           )
-        );
-    }
-
     protected function fetchAccessToken()
     {
-        if(empty($_REQUEST['code'])) {
+        if(!($code = Mage::app()->getRequest()->getParam('code'))) {
             throw new Exception(
                 Mage::helper('inchoo_socialconnect')
                     ->__('Unable to retrieve access code.')
@@ -233,49 +182,15 @@ class Inchoo_SocialConnect_Model_Google_Client
             self::OAUTH2_TOKEN_URI,
             'POST',
             array(
-                'code' => $_REQUEST['code'],
+                'code' => $code,
                 'redirect_uri' => $this->redirectUri,
                 'client_id' => $this->clientId,
                 'client_secret' => $this->clientSecret,
                 'grant_type' => 'authorization_code'
             )
-        ); 
-
-        $response->created = time();
-
-        $this->token = $response;
-    }
-
-    protected function refreshAccessToken()
-    {
-        if(empty($this->token->refresh_token)) {
-            throw new Exception(
-                Mage::helper('inchoo_socialconnect')
-                    ->__('No refresh token, unable to refresh access token.')
-            );
-        }
-
-        $response = $this->_httpRequest(
-            self::OAUTH2_TOKEN_URI,
-            'POST',
-            array(
-                'client_id' => $this->clientId,
-                'client_secret' => $this->clientSecret,
-                'refresh_token' => $this->token->refresh_token,
-                'grant_type' => 'refresh_token'
-            )
         );
 
-        $this->token->access_token = $response->access_token;
-        $this->token->expires_in = $response->expires_in;
-        $this->token->created = time();
-    }
-
-    protected function isAccessTokenExpired() {
-        // If the token is set to expire in the next 30 seconds.
-        $expired = ($this->token->created + ($this->token->expires_in - 30)) < time();
-
-        return $expired;
+        $this->token = $response;
     }
 
     protected function _httpRequest($url, $method = 'GET', $params = array())
@@ -290,6 +205,7 @@ class Inchoo_SocialConnect_Model_Google_Client
                 $client->setParameterPost($params);
                 break;
             case 'DELETE':
+                $client->setParameterGet($params);
                 break;
             default:
                 throw new Exception(
@@ -300,21 +216,21 @@ class Inchoo_SocialConnect_Model_Google_Client
 
         $response = $client->request($method);
 
-        Mage::log($response->getStatus().' - '. $response->getBody());
+        Inchoo_SocialConnect_Helper_Data::log($response->getStatus().' - '. $response->getBody());
 
-        $decoded_response = json_decode($response->getBody());
+        $decodedResponse = json_decode($response->getBody());
 
         if($response->isError()) {
             $status = $response->getStatus();
             if(($status == 400 || $status == 401)) {
-                if(isset($decoded_response->error->message)) {
-                    $message = $decoded_response->error->message;
+                if(isset($decodedResponse->error->message)) {
+                    $message = $decodedResponse->error->message;
                 } else {
                     $message = Mage::helper('inchoo_socialconnect')
                         ->__('Unspecified OAuth error occurred.');
                 }
 
-                throw new Inchoo_SocialConnect_GoogleOAuthException($message);
+                throw new Inchoo_SocialConnect_Model_Linkedin_Oauth2_Exception($message);
             } else {
                 $message = sprintf(
                     Mage::helper('inchoo_socialconnect')
@@ -326,7 +242,7 @@ class Inchoo_SocialConnect_Model_Google_Client
             }
         }
 
-        return $decoded_response;
+        return $decodedResponse;
     }
 
     protected function _isEnabled()
@@ -350,6 +266,3 @@ class Inchoo_SocialConnect_Model_Google_Client
     }
 
 }
-
-class Inchoo_SocialConnect_GoogleOAuthException extends Exception
-{}

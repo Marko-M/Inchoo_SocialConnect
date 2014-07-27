@@ -35,8 +35,9 @@ class Inchoo_SocialConnect_Helper_Google extends Mage_Core_Helper_Abstract
 {
 
     public function disconnect(Mage_Customer_Model_Customer $customer) {
-        $client = Mage::getSingleton('inchoo_socialconnect/google_client');
+        $client = Mage::getSingleton('inchoo_socialconnect/google_oauth2_client');
 
+        // TODO: Move into Inchoo_SocialConnect_Model_Google_Info_User
         try {
             $client->setAccessToken($customer->getInchooSocialconnectGtoken());
             $client->revokeToken();

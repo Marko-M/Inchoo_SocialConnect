@@ -50,12 +50,14 @@ class Inchoo_SocialConnect_Model_Linkedin_Info extends Varien_Object
     /**
      * LinkedIn client model
      *
-     * @var Inchoo_SocialConnect_Model_Linkedin_Client
+     * @var Inchoo_SocialConnect_Model_Linkedin_Oauth2_Client
      */
     protected $client = null;
 
-    public function __construct() {
-        $this->client = Mage::getSingleton('inchoo_socialconnect/linkedin_client');
+    public function _construct() {
+        parent::_construct();
+        
+        $this->client = Mage::getSingleton('inchoo_socialconnect/linkedin_oauth2_client');
         if(!($this->client->isEnabled())) {
             return $this;
         }
@@ -64,14 +66,14 @@ class Inchoo_SocialConnect_Model_Linkedin_Info extends Varien_Object
     /**
      * Get LinkedIn client model
      *
-     * @return Inchoo_SocialConnect_Model_Linkedin_Client
+     * @return Inchoo_SocialConnect_Model_Linkedin_Oauth2_Client
      */
     public function getClient()
     {
         return $this->client;
     }
 
-    public function setClient(Inchoo_SocialConnect_Model_Linkedin_Client $client)
+    public function setClient(Inchoo_SocialConnect_Model_Linkedin_Oauth2_Client $client)
     {
         $this->client = $client;
     }
@@ -112,7 +114,7 @@ class Inchoo_SocialConnect_Model_Linkedin_Info extends Varien_Object
                 $this->{$key} = $value;
             }
 
-        } catch(Inchoo_SocialConnect_LinkedinOAuthException $e) {
+        } catch(Inchoo_SocialConnect_Linkedin_Oauth2_Exception $e) {
             $this->_onException($e);
         } catch(Exception $e) {
             $this->_onException($e);
@@ -121,7 +123,7 @@ class Inchoo_SocialConnect_Model_Linkedin_Info extends Varien_Object
 
     protected function _onException($e)
     {
-        if($e instanceof Inchoo_SocialConnect_LinkedinOAuthException){
+        if($e instanceof Inchoo_SocialConnect_Linkedin_Oauth2_Exception) {
             Mage::getSingleton('core/session')->addNotice($e->getMessage());
         } else {
             Mage::getSingleton('core/session')->addError($e->getMessage());

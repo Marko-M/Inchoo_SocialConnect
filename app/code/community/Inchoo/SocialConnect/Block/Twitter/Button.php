@@ -33,13 +33,22 @@
 
 class Inchoo_SocialConnect_Block_Twitter_Button extends Mage_Core_Block_Template
 {
+    /**
+     *
+     * @var Inchoo_SocialConnect_Model_Twitter_Oauth_Client
+     */
     protected $client = null;
+    
+    /**
+     *
+     * @var Inchoo_SocialConnect_Model_Twitter_Info_User
+     */
     protected $userInfo = null;
 
     protected function _construct() {
         parent::_construct();
 
-        $this->client = Mage::getSingleton('inchoo_socialconnect/twitter_client');
+        $this->client = Mage::getSingleton('inchoo_socialconnect/twitter_oauth_client');
         if(!($this->client->isEnabled())) {
             return;
         }
@@ -54,7 +63,7 @@ class Inchoo_SocialConnect_Block_Twitter_Button extends Mage_Core_Block_Template
 
     protected function _getButtonUrl()
     {
-        if(empty($this->userInfo)) {
+        if(is_null($this->userInfo) || !$this->userInfo->hasData()) {
             return $this->client->createAuthUrl();
         } else {
             return $this->getUrl('socialconnect/twitter/disconnect');
@@ -63,7 +72,7 @@ class Inchoo_SocialConnect_Block_Twitter_Button extends Mage_Core_Block_Template
 
     protected function _getButtonText()
     {
-        if(empty($this->userInfo)) {
+        if(is_null($this->userInfo) || !$this->userInfo->hasData()) {
             if(!($text = Mage::registry('inchoo_socialconnect_button_text'))){
                 $text = $this->__('Connect');
             }

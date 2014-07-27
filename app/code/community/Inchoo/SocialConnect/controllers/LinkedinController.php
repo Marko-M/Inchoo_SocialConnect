@@ -78,8 +78,7 @@ class Inchoo_SocialConnect_LinkedinController extends Inchoo_SocialConnect_Contr
         if ($code) {
             // Linkedin API green light - proceed
 
-            $info = Mage::getModel('inchoo_socialconnect/linkedin_info')
-                ->load();
+            $info = Mage::getModel('inchoo_socialconnect/linkedin_info')->load();
             /* @var $info Inchoo_SocialConnect_Model_Linkedin_Userinfo */
 
             $token = $info->getClient()->getAccessToken();
@@ -89,7 +88,7 @@ class Inchoo_SocialConnect_LinkedinController extends Inchoo_SocialConnect_Contr
 
             if(Mage::getSingleton('customer/session')->isLoggedIn()) {
                 // Logged in user
-                if($customersByLinkedinId->getSize() > 0) {
+                if($customersByLinkedinId->getSize()) {
                     // Linkedin account already connected to other account - deny
                     Mage::getSingleton('core/session')
                         ->addNotice(
@@ -109,13 +108,13 @@ class Inchoo_SocialConnect_LinkedinController extends Inchoo_SocialConnect_Contr
                 );
 
                 Mage::getSingleton('core/session')->addSuccess(
-                    $this->__('Your Linkedin account is now connected to your store accout. You can now login using our LinkedIn Login button or using store account credentials you will receive to your email address.')
+                    $this->__('Your Linkedin account is now connected to your store account. You can now login using our LinkedIn Login button or using store account credentials you will receive to your email address.')
                 );
 
                 return $this;
             }
 
-            if($customersByLinkedinId->getSize() > 0) {
+            if($customersByLinkedinId->getSize()) {
                 // Existing connected user - login
                 $customer = $customersByLinkedinId->getFirstItem();
 
@@ -132,7 +131,7 @@ class Inchoo_SocialConnect_LinkedinController extends Inchoo_SocialConnect_Contr
             $customersByEmail = Mage::helper('inchoo_socialconnect/linkedin')
                 ->getCustomersByEmail($info->getEmailAddress());
 
-            if($customersByEmail->getSize() > 0) {
+            if($customersByEmail->getSize()) {
                 // Email account already exists - attach, login
                 $customer = $customersByEmail->getFirstItem();
 
@@ -171,7 +170,7 @@ class Inchoo_SocialConnect_LinkedinController extends Inchoo_SocialConnect_Contr
             );
 
             Mage::getSingleton('core/session')->addSuccess(
-                $this->__('Your Linkedin account is now connected to your new user accout at our store. Now you can login using our LinkedIn Login button or using store account credentials you will receive to your email address.')
+                $this->__('Your Linkedin account is now connected to your new user account at our store. Now you can login using our LinkedIn Login button or using store account credentials you will receive to your email address.')
             );
         }
     }

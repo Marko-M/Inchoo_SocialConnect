@@ -31,23 +31,30 @@
 * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
 */
 
-class Inchoo_SocialConnect_Model_Facebook_Client
+class Inchoo_SocialConnect_Model_Google_Oauth2_Client
 {
-    const REDIRECT_URI_ROUTE = 'socialconnect/facebook/connect';
+    const REDIRECT_URI_ROUTE = 'socialconnect/google/connect';
 
-    const XML_PATH_ENABLED = 'customer/inchoo_socialconnect_facebook/enabled';
-    const XML_PATH_CLIENT_ID = 'customer/inchoo_socialconnect_facebook/client_id';
-    const XML_PATH_CLIENT_SECRET = 'customer/inchoo_socialconnect_facebook/client_secret';
+    const XML_PATH_ENABLED = 'customer/inchoo_socialconnect_google/enabled';
+    const XML_PATH_CLIENT_ID = 'customer/inchoo_socialconnect_google/client_id';
+    const XML_PATH_CLIENT_SECRET = 'customer/inchoo_socialconnect_google/client_secret';
 
-    const OAUTH2_SERVICE_URI = 'https://graph.facebook.com';
-    const OAUTH2_AUTH_URI = 'https://graph.facebook.com/oauth/authorize';
-    const OAUTH2_TOKEN_URI = 'https://graph.facebook.com/oauth/access_token';
+    const OAUTH2_REVOKE_URI = 'https://accounts.google.com/o/oauth2/revoke';
+    const OAUTH2_TOKEN_URI = 'https://accounts.google.com/o/oauth2/token';
+    const OAUTH2_AUTH_URI = 'https://accounts.google.com/o/oauth2/auth';
+    const OAUTH2_SERVICE_URI = 'https://www.googleapis.com/oauth2/v2';
 
+    protected $isEnabled = null;
     protected $clientId = null;
     protected $clientSecret = null;
     protected $redirectUri = null;
     protected $state = '';
-    protected $scope = array('email', 'user_birthday');
+    protected $scope = array(
+        'https://www.googleapis.com/auth/userinfo.profile',
+        'https://www.googleapis.com/auth/userinfo.email',
+    );
+    protected $access = 'offline';
+    protected $prompt = 'auto';
 
     protected $token = null;
 
@@ -66,6 +73,14 @@ class Inchoo_SocialConnect_Model_Facebook_Client
 
             if(!empty($params['state'])) {
                 $this->state = $params['state'];
+            }
+
+            if(!empty($params['access'])) {
+                $this->access = $params['access'];
+            }
+
+            if(!empty($params['prompt'])) {
+                $this->prompt = $params['prompt'];
             }
         }
     }
@@ -105,6 +120,26 @@ class Inchoo_SocialConnect_Model_Facebook_Client
         $this->state = $state;
     }
 
+    public function getAccess()
+    {
+        return $this->access;
+    }
+
+    public function setAccess($access)
+    {
+        $this->access = $access;
+    }
+
+    public function getPrompt()
+    {
+        return $this->prompt;
+    }
+
+    public function setPrompt($prompt)
+    {
+        $this->access = $prompt;
+    }
+
     public function setAccessToken($token)
     {
         $this->token = json_decode($token);
@@ -114,6 +149,8 @@ class Inchoo_SocialConnect_Model_Facebook_Client
     {
         if(empty($this->token)) {
             $this->fetchAccessToken();
+        } else if($this->isAccessTokenExpired()) {
+            $this->refreshAccessToken();
         }
 
         return json_encode($this->token);
@@ -125,10 +162,13 @@ class Inchoo_SocialConnect_Model_Facebook_Client
         self::OAUTH2_AUTH_URI.'?'.
             http_build_query(
                 array(
-                    'client_id' => $this->clientId,
+                    'response_type' => 'code',
                     'redirect_uri' => $this->redirectUri,
+                    'client_id' => $this->clientId,
+                    'scope' => implode(' ', $this->scope),
                     'state' => $this->state,
-                    'scope' => implode(',', $this->scope)
+                    'access_type' => $this->access,
+                    'approval_prompt' => $this->prompt
                     )
             );
         return $url;
@@ -138,6 +178,8 @@ class Inchoo_SocialConnect_Model_Facebook_Client
     {
         if(empty($this->token)) {
             $this->fetchAccessToken();
+        } else if($this->isAccessTokenExpired()) {
+            $this->refreshAccessToken();
         }
 
         $url = self::OAUTH2_SERVICE_URI.$endpoint;
@@ -153,15 +195,40 @@ class Inchoo_SocialConnect_Model_Facebook_Client
         return $response;
     }
 
-    protected function fetchAccessToken()
+    public function revokeToken()
     {
+        if(empty($this->token)) {
+            throw new Exception(
+                Mage::helper('inchoo_socialconnect')
+                    ->__('No access token available.')
+            );
+        }
+
+        if(empty($this->token->refresh_token)) {
+            throw new Exception(
+                Mage::helper('inchoo_socialconnect')
+                    ->__('No refresh token, nothing to revoke.')
+            );
+        }
+
+        $this->_httpRequest(
+            self::OAUTH2_REVOKE_URI,
+            'POST',
+           array(
+               'token' => $this->token->refresh_token
+           )
+        );
+    }
+
+    protected function fetchAccessToken()
+    {        
         if(!($code = Mage::app()->getRequest()->getParam('code'))) {
             throw new Exception(
                 Mage::helper('inchoo_socialconnect')
                     ->__('Unable to retrieve access code.')
             );
         }
-
+        
         $response = $this->_httpRequest(
             self::OAUTH2_TOKEN_URI,
             'POST',
@@ -174,7 +241,41 @@ class Inchoo_SocialConnect_Model_Facebook_Client
             )
         );
 
+        $response->created = time();
+
         $this->token = $response;
+    }
+
+    protected function refreshAccessToken()
+    {
+        if(empty($this->token->refresh_token)) {
+            throw new Exception(
+                Mage::helper('inchoo_socialconnect')
+                    ->__('No refresh token, unable to refresh access token.')
+            );
+        }
+
+        $response = $this->_httpRequest(
+            self::OAUTH2_TOKEN_URI,
+            'POST',
+            array(
+                'client_id' => $this->clientId,
+                'client_secret' => $this->clientSecret,
+                'refresh_token' => $this->token->refresh_token,
+                'grant_type' => 'refresh_token'
+            )
+        );
+
+        $this->token->access_token = $response->access_token;
+        $this->token->expires_in = $response->expires_in;
+        $this->token->created = time();
+    }
+
+    protected function isAccessTokenExpired() {
+        // If the token is set to expire in the next 30 seconds.
+        $expired = ($this->token->created + ($this->token->expires_in - 30)) < time();
+
+        return $expired;
     }
 
     protected function _httpRequest($url, $method = 'GET', $params = array())
@@ -189,7 +290,6 @@ class Inchoo_SocialConnect_Model_Facebook_Client
                 $client->setParameterPost($params);
                 break;
             case 'DELETE':
-                $client->setParameterGet($params);
                 break;
             default:
                 throw new Exception(
@@ -200,34 +300,21 @@ class Inchoo_SocialConnect_Model_Facebook_Client
 
         $response = $client->request($method);
 
-        Mage::log($response->getStatus().' - '. $response->getBody());
+        Inchoo_SocialConnect_Helper_Data::log($response->getStatus().' - '. $response->getBody());
 
-        $decoded_response = json_decode($response->getBody());
-
-        /*
-         * Per http://tools.ietf.org/html/draft-ietf-oauth-v2-27#section-5.1
-         * Facebook should return data using the "application/json" media type.
-         * Facebook violates OAuth2 specification and returns string. If this
-         * ever gets fixed, following condition will not be used anymore.
-         */
-        if(empty($decoded_response)) {
-            $parsed_response = array();
-            parse_str($response->getBody(), $parsed_response);
-
-            $decoded_response = json_decode(json_encode($parsed_response));
-        }
+        $decodedResponse = json_decode($response->getBody());
 
         if($response->isError()) {
             $status = $response->getStatus();
             if(($status == 400 || $status == 401)) {
-                if(isset($decoded_response->error->message)) {
-                    $message = $decoded_response->error->message;
+                if(isset($decodedResponse->error->message)) {
+                    $message = $decodedResponse->error->message;
                 } else {
                     $message = Mage::helper('inchoo_socialconnect')
                         ->__('Unspecified OAuth error occurred.');
                 }
 
-                throw new Inchoo_SocialConnect_FacebookOAuthException($message);
+                throw new Inchoo_SocialConnect_Model_Google_OAuth2_Exception($message);
             } else {
                 $message = sprintf(
                     Mage::helper('inchoo_socialconnect')
@@ -239,7 +326,7 @@ class Inchoo_SocialConnect_Model_Facebook_Client
             }
         }
 
-        return $decoded_response;
+        return $decodedResponse;
     }
 
     protected function _isEnabled()
@@ -263,6 +350,3 @@ class Inchoo_SocialConnect_Model_Facebook_Client
     }
 
 }
-
-class Inchoo_SocialConnect_FacebookOAuthException extends Exception
-{}

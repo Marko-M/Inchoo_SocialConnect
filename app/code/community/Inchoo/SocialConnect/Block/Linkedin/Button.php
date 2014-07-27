@@ -33,14 +33,22 @@
 
 class Inchoo_SocialConnect_Block_Linkedin_Button extends Mage_Core_Block_Template
 {
+    /**
+     *
+     * @var Inchoo_SocialConnect_Model_Linkedin_Oauth2_Client 
+     */
     protected $client = null;
+    
+    /**
+     *
+     * @var Inchoo_SocialConnect_Model_Linkedin_Info_User
+     */
     protected $userInfo = null;
-    protected $redirectUri = null;
 
     protected function _construct() {
         parent::_construct();
 
-        $this->client = Mage::getSingleton('inchoo_socialconnect/linkedin_client');
+        $this->client = Mage::getSingleton('inchoo_socialconnect/linkedin_oauth2_client');
         if(!($this->client->isEnabled())) {
             return;
         }
@@ -48,7 +56,7 @@ class Inchoo_SocialConnect_Block_Linkedin_Button extends Mage_Core_Block_Templat
         $this->userInfo = Mage::registry('inchoo_socialconnect_linkedin_userinfo');
 
         // CSRF protection
-        Mage::getSingleton('core/session')->setLinkedinCsrf($csrf = md5(uniqid(rand(), TRUE)));
+        Mage::getSingleton('core/session')->setLinkedinCsrf($csrf = md5(uniqid(rand(), true)));
         $this->client->setState($csrf);
 
         Mage::getSingleton('customer/session')

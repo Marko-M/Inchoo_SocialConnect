@@ -75,6 +75,33 @@
                             <depends><enabled>1</enabled></depends>
                             <validate>required-entry</validate>
                         </client_secret>
+                        <links translate="label" module="inchoo_socialconnect">
+                            <label>Links</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>inchoo_socialconnect/google_adminhtml_system_config_form_field_links</frontend_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </links>
+                        <origin translate="label" module="inchoo_socialconnect">
+                            <label>JavaScript Origins</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>inchoo_socialconnect/google_adminhtml_system_config_form_field_origins</frontend_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </origin>
+                        <redirect translate="label" module="inchoo_socialconnect">
+                            <label>Redirect URIs</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>inchoo_socialconnect/google_adminhtml_system_config_form_field_redirects</frontend_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </redirect>
                     </fields>
                 </inchoo_socialconnect_google>
                 <inchoo_socialconnect_facebook translate="label" module="inchoo_socialconnect">
@@ -114,6 +141,33 @@
                             <depends><enabled>1</enabled></depends>
                             <validate>required-entry</validate>
                         </client_secret>
+                        <links translate="label" module="inchoo_socialconnect">
+                            <label>Links</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>inchoo_socialconnect/facebook_adminhtml_system_config_form_field_links</frontend_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </links>
+                        <origin translate="label" module="inchoo_socialconnect">
+                            <label>App Domains</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>inchoo_socialconnect/facebook_adminhtml_system_config_form_field_origins</frontend_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </origin>
+                        <redirect translate="label" module="inchoo_socialconnect">
+                            <label>Site URL</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>inchoo_socialconnect/facebook_adminhtml_system_config_form_field_redirects</frontend_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </redirect>
                     </fields>
                 </inchoo_socialconnect_facebook>
                 <inchoo_socialconnect_twitter translate="label" module="inchoo_socialconnect">
@@ -153,8 +207,35 @@
                             <depends><enabled>1</enabled></depends>
                             <validate>required-entry</validate>
                         </client_secret>
+                        <links translate="label" module="inchoo_socialconnect">
+                            <label>Links</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>inchoo_socialconnect/twitter_adminhtml_system_config_form_field_links</frontend_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </links>
+                        <origin translate="label" module="inchoo_socialconnect">
+                            <label>Website</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>inchoo_socialconnect/twitter_adminhtml_system_config_form_field_origins</frontend_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </origin>
+                        <redirect translate="label" module="inchoo_socialconnect">
+                            <label>Callback URL</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>inchoo_socialconnect/twitter_adminhtml_system_config_form_field_redirects</frontend_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </redirect>
                     </fields>
-                </inchoo_socialconnect_twitter>    
+                </inchoo_socialconnect_twitter>
                 <inchoo_socialconnect_linkedin translate="label" module="inchoo_socialconnect">
                     <label>Social Connect LinkedIn Options</label>
                     <frontend_type>text</frontend_type>
@@ -192,8 +273,35 @@
                             <depends><enabled>1</enabled></depends>
                             <validate>required-entry</validate>
                         </client_secret>
+                        <links translate="label" module="inchoo_socialconnect">
+                            <label>Links</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>inchoo_socialconnect/linkedin_adminhtml_system_config_form_field_links</frontend_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </links>
+                        <origin translate="label" module="inchoo_socialconnect">
+                            <label>Website URL</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>inchoo_socialconnect/linkedin_adminhtml_system_config_form_field_origins</frontend_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </origin>
+                        <redirect translate="label" module="inchoo_socialconnect">
+                            <label>OAuth 2.0 Redirect URLs</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>inchoo_socialconnect/linkedin_adminhtml_system_config_form_field_redirects</frontend_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </redirect>
                     </fields>
-                </inchoo_socialconnect_linkedin>                                            
+                </inchoo_socialconnect_linkedin>
             </groups>
         </customer>
     </sections>

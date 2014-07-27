@@ -33,13 +33,22 @@
 
 class Inchoo_SocialConnect_Block_Google_Account extends Mage_Core_Block_Template
 {
+    /**
+     *
+     * @var Inchoo_SocialConnect_Model_Google_Oauth2_Client
+     */
     protected $client = null;
+
+    /**
+     *
+     * @var Inchoo_SocialConnect_Model_Google_Info_User
+     */
     protected $userInfo = null;
 
     protected function _construct() {
         parent::_construct();
 
-        $this->client = Mage::getSingleton('inchoo_socialconnect/google_client');
+        $this->client = Mage::getSingleton('inchoo_socialconnect/google_oauth2_client');
         if(!($this->client->isEnabled())) {
             return;
         }
@@ -50,23 +59,23 @@ class Inchoo_SocialConnect_Block_Google_Account extends Mage_Core_Block_Template
 
     }
 
-    protected function _hasUserInfo()
+    protected function _hasData()
     {
-        return (bool) $this->userInfo;
+        return $this->userInfo->hasData();
     }
 
     protected function _getGoogleId()
     {
-        return $this->userInfo->id;
+        return $this->userInfo->getId();
     }
 
     protected function _getStatus()
     {
-        if(!empty($this->userInfo->link)) {
-            $link = '<a href="'.$this->userInfo->link.'" target="_blank">'.
-                    $this->htmlEscape($this->userInfo->name).'</a>';
+        if(!empty($this->userInfo->getLink())) {
+            $link = '<a href="'.$this->userInfo->getLink().'" target="_blank">'.
+                    $this->htmlEscape($this->userInfo->getName()).'</a>';
         } else {
-            $link = $this->userInfo->name;
+            $link = $this->userInfo->getName();
         }
 
         return $link;
@@ -74,15 +83,15 @@ class Inchoo_SocialConnect_Block_Google_Account extends Mage_Core_Block_Template
 
     protected function _getEmail()
     {
-        return $this->userInfo->email;
+        return $this->userInfo->getEmail();
     }
 
     protected function _getPicture()
     {
-        if(!empty($this->userInfo->picture)) {
+        if(!empty($this->userInfo->getPicture())) {
             return Mage::helper('inchoo_socialconnect/google')
-                    ->getProperDimensionsPictureUrl($this->userInfo->id,
-                            $this->userInfo->picture);
+                    ->getProperDimensionsPictureUrl($this->userInfo->getId(),
+                            $this->userInfo->getPicture());
         }
 
         return null;
@@ -90,13 +99,13 @@ class Inchoo_SocialConnect_Block_Google_Account extends Mage_Core_Block_Template
 
     protected function _getName()
     {
-        return $this->userInfo->name;
+        return $this->userInfo->getName();
     }
 
     protected function _getGender()
     {
-        if(!empty($this->userInfo->gender)) {
-            return ucfirst($this->userInfo->gender);
+        if(!empty($this->userInfo->getGender())) {
+            return ucfirst($this->userInfo->getGender());
         }
 
         return null;
@@ -104,14 +113,14 @@ class Inchoo_SocialConnect_Block_Google_Account extends Mage_Core_Block_Template
 
     protected function _getBirthday()
     {
-        if(!empty($this->userInfo->birthday)) {
-            if((strpos($this->userInfo->birthday, '0000')) === false) {
-                $birthday = date('F j, Y', strtotime($this->userInfo->birthday));
+        if(!empty($this->userInfo->getBirthday())) {
+            if((strpos($this->userInfo->getBirthday(), '0000')) === false) {
+                $birthday = date('F j, Y', strtotime($this->userInfo->getBirthday()));
             } else {
                 $birthday = date(
                     'F j',
                     strtotime(
-                        str_replace('0000', '1970', $this->userInfo->birthday)
+                        str_replace('0000', '1970', $this->userInfo->getBirthday())
                     )
                 );
             }

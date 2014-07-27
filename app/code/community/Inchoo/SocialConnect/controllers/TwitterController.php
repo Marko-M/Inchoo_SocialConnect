@@ -5,7 +5,7 @@ class Inchoo_SocialConnect_TwitterController extends Inchoo_SocialConnect_Contro
 
     public function requestAction()
     {
-        $client = Mage::getSingleton('inchoo_socialconnect/twitter_client');
+        $client = Mage::getSingleton('inchoo_socialconnect/twitter_oauth_client');
         if(!($client->isEnabled())) {
             Mage::helper('inchoo_socialconnect')->redirect404($this);
         }
@@ -57,21 +57,16 @@ class Inchoo_SocialConnect_TwitterController extends Inchoo_SocialConnect_Contro
             return $this;
         }
 
-        $client = Mage::getSingleton('inchoo_socialconnect/twitter_client');
+        $info = Mage::getModel('inchoo_socialconnect/twitter_info')->load();
 
-        $token = $client->getAccessToken();
-
-        $userInfo = (object) array_merge(
-                (array) ($userInfo = $client->api('/account/verify_credentials.json', 'GET', array('skip_status' => true))),
-                array('email' => sprintf('%s@twitter-user.com', strtolower($userInfo->screen_name)))
-        );
+        $token = $info->getClient()->getAccessToken();
 
         $customersByTwitterId = Mage::helper('inchoo_socialconnect/twitter')
-            ->getCustomersByTwitterId($userInfo->id);
+            ->getCustomersByTwitterId($info->getId());
 
         if(Mage::getSingleton('customer/session')->isLoggedIn()) {
             // Logged in user
-            if($customersByTwitterId->count()) {
+            if($customersByTwitterId->getSize()) {
                 // Twitter account already connected to other account - deny
                 Mage::getSingleton('core/session')
                     ->addNotice(
@@ -86,18 +81,18 @@ class Inchoo_SocialConnect_TwitterController extends Inchoo_SocialConnect_Contro
 
             Mage::helper('inchoo_socialconnect/twitter')->connectByTwitterId(
                 $customer,
-                $userInfo->id,
+                $info->getId(),
                 $token
             );
 
             Mage::getSingleton('core/session')->addSuccess(
-                $this->__('Your Twitter account is now connected to your store accout. You can now login using our Twitter Login button or using store account credentials you will receive to your email address.')
+                $this->__('Your Twitter account is now connected to your store account. You can now login using our Twitter Login button or using store account credentials you will receive to your email address.')
             );
 
             return $this;
         }
 
-        if($customersByTwitterId->count()) {
+        if($customersByTwitterId->getSize()) {
             // Existing connected user - login
             $customer = $customersByTwitterId->getFirstItem();
 
@@ -112,15 +107,15 @@ class Inchoo_SocialConnect_TwitterController extends Inchoo_SocialConnect_Contro
         }
 
         $customersByEmail = Mage::helper('inchoo_socialconnect/twitter')
-            ->getCustomersByEmail($userInfo->email);
+            ->getCustomersByEmail($info->getEmail());
 
-        if($customersByEmail->count()) {
+        if($customersByEmail->getSize()) {
             // Email account already exists - attach, login
             $customer = $customersByEmail->getFirstItem();
 
             Mage::helper('inchoo_socialconnect/twitter')->connectByTwitterId(
                 $customer,
-                $userInfo->id,
+                $info->getId(),
                 $token
             );
 
@@ -132,24 +127,24 @@ class Inchoo_SocialConnect_TwitterController extends Inchoo_SocialConnect_Contro
         }
 
         // New connection - create, attach, login
-        if(empty($userInfo->name)) {
+        if(empty($info->getName())) {
             throw new Exception(
                 $this->__('Sorry, could not retrieve your Twitter last name. Please try again.')
             );
         }
 
         Mage::helper('inchoo_socialconnect/twitter')->connectByCreatingAccount(
-            $userInfo->email,
-            $userInfo->name,
-            $userInfo->id,
+            $info->getEmail(),
+            $info->getName(),
+            $info->getId(),
             $token
         );
 
         Mage::getSingleton('core/session')->addSuccess(
-            $this->__('Your Twitter account is now connected to your new user accout at our store. Now you can login using our Twitter Login button.')
+            $this->__('Your Twitter account is now connected to your new user account at our store. Now you can login using our Twitter Login button.')
         );
         Mage::getSingleton('core/session')->addNotice(
-            sprintf($this->__('Since Twitter doesn\'t support third-party access to your email address, we were unable to send you your store accout credentials. To be able to login using store account credentials you will need to update your email address and password using our <a href="%s">Edit Account Information</a>.'), Mage::getUrl('customer/account/edit'))
+            sprintf($this->__('Since Twitter doesn\'t support third-party access to your email address, we were unable to send you your store account credentials. To be able to login using store account credentials you will need to update your email address and password using our <a href="%s">Edit Account Information</a>.'), Mage::getUrl('customer/account/edit'))
         );
     }
 

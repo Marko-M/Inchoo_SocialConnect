@@ -33,13 +33,22 @@
 
 class Inchoo_SocialConnect_Block_Linkedin_Account extends Mage_Core_Block_Template
 {
+    /**
+     *
+     * @var Inchoo_SocialConnect_Model_Linkedin_Oauth2_Client
+     */
     protected $client = null;
+    
+    /**
+     *
+     * @var Inchoo_SocialConnect_Model_Linkedin_Info_User
+     */
     protected $userInfo = null;
 
     protected function _construct() {
         parent::_construct();
 
-        $this->client = Mage::getSingleton('inchoo_socialconnect/linkedin_client');
+        $this->client = Mage::getSingleton('inchoo_socialconnect/linkedin_oauth2_client');
         if(!($this->client->isEnabled())) {
             return;
         }
@@ -70,16 +79,16 @@ class Inchoo_SocialConnect_Block_Linkedin_Account extends Mage_Core_Block_Templa
 
         return $link;
     }
-    
+
     protected function _getPublicProfileUrl()
     {
         if(!empty($this->userInfo->getPublicProfileUrl())) {
             $link = '<a href="'.$this->userInfo->getPublicProfileUrl().'" target="_blank">'.
                     $this->htmlEscape($this->userInfo->getPublicProfileUrl()).'</a>';
-            
+
             return $link;
         }
-        
+
         return null;
     }
 
