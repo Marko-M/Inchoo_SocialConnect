@@ -218,13 +218,13 @@ class Inchoo_SocialConnect_Model_Linkedin_Oauth2_Client
 
         Inchoo_SocialConnect_Helper_Data::log($response->getStatus().' - '. $response->getBody());
 
-        $decoded_response = json_decode($response->getBody());
+        $decodedResponse = json_decode($response->getBody());
 
         if($response->isError()) {
             $status = $response->getStatus();
             if(($status == 400 || $status == 401)) {
-                if(isset($decoded_response->error->message)) {
-                    $message = $decoded_response->error->message;
+                if(isset($decodedResponse->error->message)) {
+                    $message = $decodedResponse->error->message;
                 } else {
                     $message = Mage::helper('inchoo_socialconnect')
                         ->__('Unspecified OAuth error occurred.');
@@ -242,7 +242,7 @@ class Inchoo_SocialConnect_Model_Linkedin_Oauth2_Client
             }
         }
 
-        return $decoded_response;
+        return $decodedResponse;
     }
 
     protected function _isEnabled()
