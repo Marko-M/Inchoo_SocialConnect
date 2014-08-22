@@ -127,7 +127,8 @@ class Inchoo_SocialConnect_TwitterController extends Inchoo_SocialConnect_Contro
         }
 
         // New connection - create, attach, login
-        if(empty($info->getName())) {
+        $name = $info->getName();
+        if(empty($name)) {
             throw new Exception(
                 $this->__('Sorry, could not retrieve your Twitter last name. Please try again.')
             );
