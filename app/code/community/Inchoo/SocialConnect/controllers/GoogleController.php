@@ -156,7 +156,7 @@ class Inchoo_SocialConnect_GoogleController extends Inchoo_SocialConnect_Control
                 );
             }
 
-						$familyName = $info->getFamilyName();
+            $familyName = $info->getFamilyName();
             if(empty($familyName)) {
                 throw new Exception(
                     $this->__('Sorry, could not retrieve your Google last name. Please try again.')

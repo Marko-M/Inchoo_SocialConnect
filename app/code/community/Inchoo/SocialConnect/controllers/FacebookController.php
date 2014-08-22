@@ -155,7 +155,7 @@ class Inchoo_SocialConnect_FacebookController extends Inchoo_SocialConnect_Contr
                 );
             }
 
-						$lastName = $info->getLastName();
+            $lastName = $info->getLastName();
             if(empty($lastName)) {
                 throw new Exception(
                     $this->__('Sorry, could not retrieve your Facebook last name. Please try again.')
