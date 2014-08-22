@@ -156,7 +156,7 @@ class Inchoo_SocialConnect_LinkedinController extends Inchoo_SocialConnect_Contr
                 );
             }
 
-						$lastName = $info->getLastName();
+    $lastName = $info->getLastName();
             if(empty($lastname)) {
                 throw new Exception(
                     $this->__('Sorry, could not retrieve your Linkedin last name. Please try again.')
