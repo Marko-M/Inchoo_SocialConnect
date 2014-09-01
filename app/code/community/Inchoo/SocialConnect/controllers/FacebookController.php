@@ -148,13 +148,15 @@ class Inchoo_SocialConnect_FacebookController extends Inchoo_SocialConnect_Contr
             }
 
             // New connection - create, attach, login
-            if(empty($info->getFirstName())) {
+            $firstName = $info->getFirstName();
+            if(empty($firstName)) {
                 throw new Exception(
                     $this->__('Sorry, could not retrieve your Facebook first name. Please try again.')
                 );
             }
 
-            if(empty($info->getLastName())) {
+            $lastName = $info->getLastName();
+            if(empty($lastName)) {
                 throw new Exception(
                     $this->__('Sorry, could not retrieve your Facebook last name. Please try again.')
                 );
