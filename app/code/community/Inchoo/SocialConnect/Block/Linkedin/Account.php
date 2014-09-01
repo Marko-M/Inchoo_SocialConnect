@@ -70,8 +70,9 @@ class Inchoo_SocialConnect_Block_Linkedin_Account extends Mage_Core_Block_Templa
 
     protected function _getStatus()
     {
-        if(!empty($this->userInfo->getSiteStandardProfileRequest()->url)) {
-            $link = '<a href="'.$this->userInfo->getSiteStandardProfileRequest()->url.'" target="_blank">'.
+        $siteStandardProfileRequest = $this->userInfo->getSiteStandardProfileRequest();
+        if($siteStandardProfileRequest && !empty($siteStandardProfileRequest->url)) {
+            $link = '<a href="'.$siteStandardProfileRequest->url.'" target="_blank">'.
                     $this->htmlEscape($this->_getName()).'</a>';
         } else {
             $link = $this->_getName();
@@ -82,7 +83,7 @@ class Inchoo_SocialConnect_Block_Linkedin_Account extends Mage_Core_Block_Templa
 
     protected function _getPublicProfileUrl()
     {
-        if(!empty($this->userInfo->getPublicProfileUrl())) {
+        if($this->userInfo->getPublicProfileUrl()) {
             $link = '<a href="'.$this->userInfo->getPublicProfileUrl().'" target="_blank">'.
                     $this->htmlEscape($this->userInfo->getPublicProfileUrl()).'</a>';
 
@@ -99,7 +100,7 @@ class Inchoo_SocialConnect_Block_Linkedin_Account extends Mage_Core_Block_Templa
 
     protected function _getPicture()
     {
-        if(!empty($this->userInfo->getPictureUrl())) {
+        if($this->userInfo->getPictureUrl()) {
             return Mage::helper('inchoo_socialconnect/linkedin')
                     ->getProperDimensionsPictureUrl($this->userInfo->getId(),
                             $this->userInfo->getPictureUrl());

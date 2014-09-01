@@ -38,7 +38,7 @@ class Inchoo_SocialConnect_Block_Twitter_Account extends Mage_Core_Block_Templat
      * @var Inchoo_SocialConnect_Model_Twitter_Oauth_Client
      */
     protected $client = null;
-    
+
     /**
      *
      * @var Inchoo_SocialConnect_Model_Twitter_Info_User
@@ -78,7 +78,7 @@ class Inchoo_SocialConnect_Block_Twitter_Account extends Mage_Core_Block_Templat
 
     protected function _getPicture()
     {
-        if(!empty($this->userInfo->getProfileImageUrl())) {
+        if($this->userInfo->getProfileImageUrl()) {
             return Mage::helper('inchoo_socialconnect/twitter')
                     ->getProperDimensionsPictureUrl($this->userInfo->getId(),
                             $this->userInfo->getProfileImageUrl());
