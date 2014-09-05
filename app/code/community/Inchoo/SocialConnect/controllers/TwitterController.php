@@ -7,7 +7,7 @@ class Inchoo_SocialConnect_TwitterController extends Inchoo_SocialConnect_Contro
     {
         $client = Mage::getSingleton('inchoo_socialconnect/twitter_oauth_client');
         if(!($client->isEnabled())) {
-            Mage::helper('inchoo_socialconnect')->redirect404($this);
+            $this->norouteAction();
         }
 
         try {
@@ -24,7 +24,7 @@ class Inchoo_SocialConnect_TwitterController extends Inchoo_SocialConnect_Contro
             if(!empty($referer)) {
                 $this->_redirectUrl($referer);
             } else {
-                Mage::helper('inchoo_socialconnect')->redirect404($this);
+                $this->norouteAction();
             }
         }
     }
@@ -147,6 +147,8 @@ class Inchoo_SocialConnect_TwitterController extends Inchoo_SocialConnect_Contro
         Mage::getSingleton('core/session')->addNotice(
             sprintf($this->__('Since Twitter doesn\'t support third-party access to your email address, we were unable to send you your store account credentials. To be able to login using store account credentials you will need to update your email address and password using our <a href="%s">Edit Account Information</a>.'), Mage::getUrl('customer/account/edit'))
         );
+        
+        return $this;
     }
 
 }
