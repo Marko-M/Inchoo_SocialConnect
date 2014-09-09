@@ -54,7 +54,7 @@
                 <div class="col-1">
                     <?php if(!empty($picture)): ?>
                     <p>
-                        <img src="<?php echo $picture; ?>" alt="<?php echo $this->htmlEscape($name); ?>" />
+                        <img src="<?php echo $picture; ?>" alt="<?php echo $this->escapeHtml($name); ?>" />
                     </p>
                     <?php endif; ?>
                 </div>

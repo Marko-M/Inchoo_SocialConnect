@@ -73,7 +73,7 @@ class Inchoo_SocialConnect_Block_Linkedin_Account extends Mage_Core_Block_Templa
         $siteStandardProfileRequest = $this->userInfo->getSiteStandardProfileRequest();
         if($siteStandardProfileRequest && !empty($siteStandardProfileRequest->url)) {
             $link = '<a href="'.$siteStandardProfileRequest->url.'" target="_blank">'.
-                    $this->htmlEscape($this->_getName()).'</a>';
+                    $this->escapeHtml($this->_getName()).'</a>';
         } else {
             $link = $this->_getName();
         }
@@ -85,7 +85,7 @@ class Inchoo_SocialConnect_Block_Linkedin_Account extends Mage_Core_Block_Templa
     {
         if($this->userInfo->getPublicProfileUrl()) {
             $link = '<a href="'.$this->userInfo->getPublicProfileUrl().'" target="_blank">'.
-                    $this->htmlEscape($this->userInfo->getPublicProfileUrl()).'</a>';
+                    $this->escapeHtml($this->userInfo->getPublicProfileUrl()).'</a>';
 
             return $link;
         }

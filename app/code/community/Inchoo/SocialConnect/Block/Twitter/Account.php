@@ -73,7 +73,7 @@ class Inchoo_SocialConnect_Block_Twitter_Account extends Mage_Core_Block_Templat
     protected function _getStatus()
     {
         return '<a href="'.sprintf('https://twitter.com/%s', $this->userInfo->getScreenName()).'" target="_blank">'.
-                    $this->htmlEscape($this->userInfo->getScreenName()).'</a>';
+                    $this->escapeHtml($this->userInfo->getScreenName()).'</a>';
     }
 
     protected function _getPicture()
