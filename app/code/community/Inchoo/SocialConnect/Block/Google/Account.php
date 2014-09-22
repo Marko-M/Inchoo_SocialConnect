@@ -71,7 +71,7 @@ class Inchoo_SocialConnect_Block_Google_Account extends Mage_Core_Block_Template
 
     protected function _getStatus()
     {
-        if(!empty($this->userInfo->getLink())) {
+        if($this->userInfo->getLink()) {
             $link = '<a href="'.$this->userInfo->getLink().'" target="_blank">'.
                     $this->htmlEscape($this->userInfo->getName()).'</a>';
         } else {
@@ -88,7 +88,7 @@ class Inchoo_SocialConnect_Block_Google_Account extends Mage_Core_Block_Template
 
     protected function _getPicture()
     {
-        if(!empty($this->userInfo->getPicture())) {
+        if($this->userInfo->getPicture()) {
             return Mage::helper('inchoo_socialconnect/google')
                     ->getProperDimensionsPictureUrl($this->userInfo->getId(),
                             $this->userInfo->getPicture());
@@ -104,7 +104,7 @@ class Inchoo_SocialConnect_Block_Google_Account extends Mage_Core_Block_Template
 
     protected function _getGender()
     {
-        if(!empty($this->userInfo->getGender())) {
+        if($this->userInfo->getGender()) {
             return ucfirst($this->userInfo->getGender());
         }
 
@@ -113,7 +113,7 @@ class Inchoo_SocialConnect_Block_Google_Account extends Mage_Core_Block_Template
 
     protected function _getBirthday()
     {
-        if(!empty($this->userInfo->getBirthday())) {
+        if($this->userInfo->getBirthday()) {
             if((strpos($this->userInfo->getBirthday(), '0000')) === false) {
                 $birthday = date('F j, Y', strtotime($this->userInfo->getBirthday()));
             } else {

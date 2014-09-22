@@ -149,13 +149,15 @@ class Inchoo_SocialConnect_GoogleController extends Inchoo_SocialConnect_Control
             }
 
             // New connection - create, attach, login
-            if(empty($info->getGivenName())) {
+            $givenName = $info->getGivenName();
+            if(empty($givenName)) {
                 throw new Exception(
                     $this->__('Sorry, could not retrieve your Google first name. Please try again.')
                 );
             }
 
-            if(empty($info->getFamilyName())) {
+            $familyName = $info->getFamilyName();
+            if(empty($familyName)) {
                 throw new Exception(
                     $this->__('Sorry, could not retrieve your Google last name. Please try again.')
                 );

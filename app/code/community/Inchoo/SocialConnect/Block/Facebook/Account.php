@@ -103,7 +103,7 @@ class Inchoo_SocialConnect_Block_Facebook_Account extends Mage_Core_Block_Templa
 
     protected function _getGender()
     {
-        if(!empty($this->userInfo->getGender())) {
+        if($this->userInfo->getGender()) {
             return ucfirst($this->userInfo->getGender());
         }
 
@@ -112,7 +112,7 @@ class Inchoo_SocialConnect_Block_Facebook_Account extends Mage_Core_Block_Templa
 
     protected function _getBirthday()
     {
-        if(!empty($this->userInfo->getBirthday())) {
+        if($this->userInfo->getBirthday()) {
             $birthday = date('F j, Y', strtotime($this->userInfo->getBirthday()));
             return $birthday;
         }
