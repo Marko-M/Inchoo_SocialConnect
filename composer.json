@@ -1,0 +1,13 @@
+{
+    "name":"marko-m/inchoo_socialconnect",
+    "type":"magento-module",
+    "license":"OSL-3.0",
+    "homepage":"https://github.com/Marko-M/Inchoo_SocialConnect",
+    "description":"Inchoo_SocialConnect Magento module http://inchoo.net/ecommerce/magento/social-connect-magento-extension/",
+    "authors":[
+        {
+            "name":"Marko M",
+            "email":"{firstname}.{lastname}@inchoo.com"
+        }
+    ]
+}
