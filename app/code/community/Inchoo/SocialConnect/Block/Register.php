@@ -72,7 +72,7 @@ class Inchoo_SocialConnect_Block_Register extends Mage_Core_Block_Template
             $this->numEnabled++;
         }
 
-        Mage::register('inchoo_socialconnect_button_text', $this->__('Register'));
+        Mage::register('inchoo_socialconnect_button_text', $this->__('Register'), true);
 
         $this->setTemplate('inchoo/socialconnect/register.phtml');
     }
