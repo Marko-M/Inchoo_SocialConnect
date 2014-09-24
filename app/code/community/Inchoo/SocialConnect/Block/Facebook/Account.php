@@ -72,7 +72,7 @@ class Inchoo_SocialConnect_Block_Facebook_Account extends Mage_Core_Block_Templa
     {
         if($this->userInfo->getLink()) {
             $link = '<a href="'.$this->userInfo->getLink().'" target="_blank">'.
-                    $this->htmlEscape($this->userInfo->getName()).'</a>';
+                    $this->escapeHtml($this->userInfo->getName()).'</a>';
         } else {
             $link = $this->userInfo->getName();
         }
