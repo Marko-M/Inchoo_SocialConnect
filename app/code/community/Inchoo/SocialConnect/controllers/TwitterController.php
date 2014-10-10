@@ -19,8 +19,6 @@ class Inchoo_SocialConnect_TwitterController extends Inchoo_SocialConnect_Contro
             Mage::getSingleton('core/session')->addError($e->getMessage());
             Mage::logException($e);
 
-            $this->_sessionCleanup();
-
             if(!empty($referer)) {
                 $this->_redirectUrl($referer);
             } else {
