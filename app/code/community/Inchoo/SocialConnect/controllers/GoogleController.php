@@ -57,7 +57,7 @@ class Inchoo_SocialConnect_GoogleController extends Inchoo_SocialConnect_Control
         }
 
         if($errorCode) {
-            // Google API read light - abort
+            // Google API red light - abort
             if($errorCode === 'access_denied') {
                 Mage::getSingleton('core/session')
                     ->addNotice(
@@ -128,7 +128,7 @@ class Inchoo_SocialConnect_GoogleController extends Inchoo_SocialConnect_Control
                 return $this;
             }
 
-            $customersByEmail = Mage::helper('inchoo_socialconnect/facebook')
+            $customersByEmail = Mage::helper('inchoo_socialconnect/google')
                 ->getCustomersByEmail($info->getEmail());
 
             if($customersByEmail->getSize())  {
