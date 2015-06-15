@@ -5,8 +5,10 @@ app/etc/modules/Inchoo_SocialConnect.xml                          app/etc/module
 skin/frontend/base/default/inchoo_socialconnect/                  skin/frontend/base/default/inchoo_socialconnect/
 app/locale/da_DK/Inchoo_SocialConnect.csv                         app/locale/da_DK/Inchoo_SocialConnect.csv
 app/locale/en_US/Inchoo_SocialConnect.csv                         app/locale/en_US/Inchoo_SocialConnect.csv
+app/locale/es_ES/Inchoo_SocialConnect.csv                         app/locale/es_ES/Inchoo_SocialConnect.csv
 app/locale/sl_SI/Inchoo_SocialConnect.csv                         app/locale/sl_SI/Inchoo_SocialConnect.csv
 app/locale/de_DE/Inchoo_SocialConnect.csv                         app/locale/de_DE/Inchoo_SocialConnect.csv
 app/locale/fr_FR/Inchoo_SocialConnect.csv                         app/locale/fr_FR/Inchoo_SocialConnect.csv
 app/locale/es_MX/Inchoo_SocialConnect.csv                         app/locale/es_MX/Inchoo_SocialConnect.csv
 app/locale/it_IT/Inchoo_SocialConnect.csv                         app/locale/it_IT/Inchoo_SocialConnect.csv
+app/locale/tr_TR/Inchoo_SocialConnect.csv                         app/locale/tr_TR/Inchoo_SocialConnect.csv
