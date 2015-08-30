@@ -33,10 +33,6 @@
 
 class Inchoo_SocialConnect_Model_Facebook_Info_User extends Inchoo_SocialConnect_Model_Facebook_Info
 {
-    
-    protected $params = array(
-        'fields' => 'id,name,first_name,last_name,link,birthday,gender,email,picture.type(large)'
-    );    
 
     /**
      *
@@ -70,7 +66,7 @@ class Inchoo_SocialConnect_Model_Facebook_Info_User extends Inchoo_SocialConnect
             return $this;
         }
 
-        $this->setAccessToken($socialconnectFtoken);
+        $this->setAccessToken(unserialize($socialconnectFtoken));
         $this->_load();
 
         return $this;

@@ -31,8 +31,10 @@
  * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  */
 
-class Inchoo_SocialConnect_Controller_Abstract extends Mage_Core_Controller_Front_Action
+abstract class Inchoo_SocialConnect_Controller_Abstract extends Mage_Core_Controller_Front_Action
 {
+
+    abstract protected function _connectCallback();
 
     public function connectAction()
     {

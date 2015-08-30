@@ -33,7 +33,17 @@
 
 class Inchoo_SocialConnect_Model_Facebook_Info extends Varien_Object
 {
-    protected $params = array();
+    protected $params = array(
+        'id',
+        'name',
+        'first_name',
+        'last_name',
+        'link',
+        'birthday',
+        'gender',
+        'email',
+        'picture.type(large)'
+    );
 
     /**
      * Facebook client model
