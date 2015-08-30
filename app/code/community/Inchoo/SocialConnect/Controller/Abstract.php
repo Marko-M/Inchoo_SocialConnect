@@ -69,7 +69,7 @@ abstract class Inchoo_SocialConnect_Controller_Abstract extends Mage_Core_Contro
 
         if (!$session->getBeforeAuthUrl() || $session->getBeforeAuthUrl() == Mage::getBaseUrl()) {
             // Set default URL to redirect customer to
-            $session->setBeforeAuthUrl($this->_getCustomerSession()->getSocialConnectRedirect());
+            $session->setBeforeAuthUrl($session->getSocialConnectRedirect());
             // Redirect customer to the last page visited after logging in
             if ($session->isLoggedIn()) {
                 if (!Mage::getStoreConfigFlag(
