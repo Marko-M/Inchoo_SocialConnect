@@ -194,8 +194,7 @@ class Inchoo_SocialConnect_FacebookController extends Inchoo_SocialConnect_Contr
 
             Mage::getSingleton('core/session')->addSuccess(
                 $this->__('Your Facebook account is now connected to your new user account at our store.'.
-                    ' Now you can login using our Facebook Login button or using store account credentials you will '.
-                    'receive to your email address.')
+                    ' Now you can login using our Facebook Login button.')
             );
         }
     }

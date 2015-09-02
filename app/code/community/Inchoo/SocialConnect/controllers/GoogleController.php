@@ -172,7 +172,7 @@ class Inchoo_SocialConnect_GoogleController extends Inchoo_SocialConnect_Control
             );
 
             Mage::getSingleton('core/session')->addSuccess(
-                $this->__('Your Google account is now connected to your new user account at our store. Now you can login using our Google Login button or using store account credentials you will receive to your email address.')
+                $this->__('Your Google account is now connected to your new user account at our store. Now you can login using our Google Login button.')
             );
         }
     }

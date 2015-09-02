@@ -144,9 +144,6 @@ class Inchoo_SocialConnect_TwitterController extends Inchoo_SocialConnect_Contro
         Mage::getSingleton('core/session')->addSuccess(
             $this->__('Your Twitter account is now connected to your new user account at our store. Now you can login using our Twitter Login button.')
         );
-        Mage::getSingleton('core/session')->addNotice(
-            sprintf($this->__('Since Twitter doesn\'t support third-party access to your email address, we were unable to send you your store account credentials. To be able to login using store account credentials you will need to update your email address and password using our <a href="%s">Edit Account Information</a>.'), Mage::getUrl('customer/account/edit'))
-        );
         
         return $this;
     }
