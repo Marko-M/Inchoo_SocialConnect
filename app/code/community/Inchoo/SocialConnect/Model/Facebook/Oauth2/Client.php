@@ -47,7 +47,7 @@ class Inchoo_SocialConnect_Model_Facebook_Oauth2_Client
     protected $clientSecret = null;
     protected $redirectUri = null;
     protected $state = '';
-    protected $scope = array('email', 'user_birthday');
+    protected $scope = array('public_profile', 'email', 'user_birthday');
 
     protected $token = null;
 
@@ -107,29 +107,36 @@ class Inchoo_SocialConnect_Model_Facebook_Oauth2_Client
 
     public function setAccessToken($token)
     {
-        $this->token = json_decode($token);
+        $this->token = $token;
+
+        $this->extendAccessToken();
     }
 
-    public function getAccessToken()
+    public function getAccessToken($code = null)
     {
-        if(empty($this->token)) {
-            $this->fetchAccessToken();
+        if(!empty($code)) {
+            return $this->fetchAccessToken($code);
+        } else if(!empty($this->token)) {
+            return $this->token;
+        } else {
+            throw new Exception(
+                Mage::helper('inchoo_socialconnect')
+                    ->__('Unable to proceed without an access token.')
+            );
         }
-
-        return json_encode($this->token);
     }
 
     public function createAuthUrl()
     {
         $url =
-        self::OAUTH2_AUTH_URI.'?'.
+            self::OAUTH2_AUTH_URI.'?'.
             http_build_query(
                 array(
                     'client_id' => $this->clientId,
                     'redirect_uri' => $this->redirectUri,
                     'state' => $this->state,
                     'scope' => implode(',', $this->scope)
-                    )
+                )
             );
         return $url;
     }
@@ -137,7 +144,10 @@ class Inchoo_SocialConnect_Model_Facebook_Oauth2_Client
     public function api($endpoint, $method = 'GET', $params = array())
     {
         if(empty($this->token)) {
-            $this->fetchAccessToken();
+            throw new Exception(
+                Mage::helper('inchoo_socialconnect')
+                    ->__('Unable to proceed without an access token.')
+            );
         }
 
         $url = self::OAUTH2_SERVICE_URI.$endpoint;
@@ -153,15 +163,8 @@ class Inchoo_SocialConnect_Model_Facebook_Oauth2_Client
         return $response;
     }
 
-    protected function fetchAccessToken()
+    protected function fetchAccessToken($code)
     {
-        if(!($code = Mage::app()->getRequest()->getParam('code'))) {
-            throw new Exception(
-                Mage::helper('inchoo_socialconnect')
-                    ->__('Unable to retrieve access code.')
-            );
-        }
-
         $response = $this->_httpRequest(
             self::OAUTH2_TOKEN_URI,
             'POST',
@@ -175,6 +178,39 @@ class Inchoo_SocialConnect_Model_Facebook_Oauth2_Client
         );
 
         $this->token = $response;
+
+        $this->extendAccessToken();
+
+        return $this->token;
+    }
+
+    public function extendAccessToken()
+    {
+        if(empty($this->token)) {
+            throw new Exception(
+                Mage::helper('inchoo_socialconnect')
+                    ->__('No token set, nothing to extend.')
+            );
+        }
+
+        // Expires not set or expires over two hours means long lived token
+        if(!property_exists($this->token, 'expires') || $this->token->expires > 7200) {
+            // Long lived token, no need to extend
+            return;
+        }
+
+        $response = $this->_httpRequest(
+            self::OAUTH2_TOKEN_URI,
+            'GET',
+            array(
+                'client_id' => $this->clientId,
+                'client_secret' => $this->clientSecret,
+                'fb_exchange_token' => $this->token->access_token,
+                'grant_type' => 'fb_exchange_token'
+            )
+        );
+
+        return $this->token = $response;
     }
 
     protected function _httpRequest($url, $method = 'GET', $params = array())

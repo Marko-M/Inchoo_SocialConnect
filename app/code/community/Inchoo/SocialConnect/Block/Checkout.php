@@ -72,7 +72,7 @@ class Inchoo_SocialConnect_Block_Checkout extends Mage_Core_Block_Template
             $this->numEnabled++;
         }
 
-        Mage::register('inchoo_socialconnect_button_text', $this->__('Continue'));
+        Mage::register('inchoo_socialconnect_button_text', $this->__('Continue'), true);
 
         $this->setTemplate('inchoo/socialconnect/checkout.phtml');
     }

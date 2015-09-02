@@ -126,12 +126,10 @@ class Inchoo_SocialConnect_Helper_Google extends Mage_Core_Helper_Abstract
         }
 
         if(Mage::getSingleton('customer/session')->isLoggedIn()) {
-            if(Mage::getSingleton('customer/session')->isLoggedIn()) {
-                $collection->addFieldToFilter(
-                    'entity_id',
-                    array('neq' => Mage::getSingleton('customer/session')->getCustomerId())
-                );
-            }
+            $collection->addFieldToFilter(
+                'entity_id',
+                array('neq' => Mage::getSingleton('customer/session')->getCustomerId())
+            );
         }
 
         return $collection;

@@ -47,6 +47,7 @@ class Inchoo_SocialConnect_FacebookController extends Inchoo_SocialConnect_Contr
         $errorCode = $this->getRequest()->getParam('error');
         $code = $this->getRequest()->getParam('code');
         $state = $this->getRequest()->getParam('state');
+
         if(!($errorCode || $code) && !$state) {
             // Direct route access - deny
             return $this;
@@ -76,14 +77,18 @@ class Inchoo_SocialConnect_FacebookController extends Inchoo_SocialConnect_Contr
         }
 
         if ($code) {
+            /** @var Inchoo_SocialConnect_Helper_Facebook $helper */
+            $helper = Mage::helper('inchoo_socialconnect/facebook');
+
             // Facebook API green light - proceed
-            $info = Mage::getModel('inchoo_socialconnect/facebook_info')->load();
-            /* @var $info Inchoo_SocialConnect_Model_Facebook_Info */
+            /** @var Inchoo_SocialConnect_Model_Facebook_Info $info */
+            $info = Mage::getModel('inchoo_socialconnect/facebook_info');
 
-            $token = $info->getClient()->getAccessToken();
+            $token = $info->getClient()->getAccessToken($code);
 
-            $customersByFacebookId = Mage::helper('inchoo_socialconnect/facebook')
-                ->getCustomersByFacebookId($info->getId());
+            $info->load();
+
+            $customersByFacebookId = $helper->getCustomersByFacebookId($info->getId());
 
             if(Mage::getSingleton('customer/session')->isLoggedIn()) {
                 // Logged in user
@@ -100,14 +105,16 @@ class Inchoo_SocialConnect_FacebookController extends Inchoo_SocialConnect_Contr
                 // Connect from account dashboard - attach
                 $customer = Mage::getSingleton('customer/session')->getCustomer();
 
-                Mage::helper('inchoo_socialconnect/facebook')->connectByFacebookId(
+                $helper->connectByFacebookId(
                     $customer,
                     $info->getId(),
                     $token
                 );
 
                 Mage::getSingleton('core/session')->addSuccess(
-                    $this->__('Your Facebook account is now connected to your store account. You can now login using our Facebook Login button or using store account credentials you will receive to your email address.')
+                    $this->__('Your Facebook account is now connected to your store account. You can now login using '.
+                        'our Facebook Login button or using store account credentials you will receive to your email '.
+                        'address.')
                 );
 
                 return $this;
@@ -117,7 +124,7 @@ class Inchoo_SocialConnect_FacebookController extends Inchoo_SocialConnect_Contr
                 // Existing connected user - login
                 $customer = $customersByFacebookId->getFirstItem();
 
-                Mage::helper('inchoo_socialconnect/facebook')->loginByCustomer($customer);
+                $helper->loginByCustomer($customer);
 
                 Mage::getSingleton('core/session')
                     ->addSuccess(
@@ -127,21 +134,21 @@ class Inchoo_SocialConnect_FacebookController extends Inchoo_SocialConnect_Contr
                 return $this;
             }
 
-            $customersByEmail = Mage::helper('inchoo_socialconnect/facebook')
-                ->getCustomersByEmail($info->getEmail());
+            $customersByEmail = $helper->getCustomersByEmail($info->getEmail());
 
             if($customersByEmail->getSize()) {
                 // Email account already exists - attach, login
                 $customer = $customersByEmail->getFirstItem();
 
-                Mage::helper('inchoo_socialconnect/facebook')->connectByFacebookId(
+                $helper->connectByFacebookId(
                     $customer,
                     $info->getId(),
                     $token
                 );
 
                 Mage::getSingleton('core/session')->addSuccess(
-                    $this->__('We have discovered you already have an account at our store. Your Facebook account is now connected to your store account.')
+                    $this->__('We have discovered you already have an account at our store. Your Facebook account is '.
+                        'now connected to your store account.')
                 );
 
                 return $this;
@@ -162,16 +169,32 @@ class Inchoo_SocialConnect_FacebookController extends Inchoo_SocialConnect_Contr
                 );
             }
 
-            Mage::helper('inchoo_socialconnect/facebook')->connectByCreatingAccount(
+            $birthday = $info->getBirthday();
+            $birthday = Mage::app()->getLocale()->date($birthday, null, null, false)
+                ->toString('yyyy-MM-dd');
+
+            $gender = $info->getGender();
+            if(empty($gender)) {
+                $gender = null;
+            } else if($gender = 'male') {
+                $gender = 1;
+            } else if($gender = 'female') {
+                $gender = 2;
+            }
+
+            $helper->connectByCreatingAccount(
                 $info->getEmail(),
                 $info->getFirstName(),
                 $info->getLastName(),
                 $info->getId(),
+                $birthday,
+                $gender,
                 $token
             );
 
             Mage::getSingleton('core/session')->addSuccess(
-                $this->__('Your Facebook account is now connected to your new user account at our store. Now you can login using our Facebook Login button or using store account credentials you will receive to your email address.')
+                $this->__('Your Facebook account is now connected to your new user account at our store.'.
+                    ' Now you can login using our Facebook Login button.')
             );
         }
     }

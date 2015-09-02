@@ -157,7 +157,7 @@ class Inchoo_SocialConnect_LinkedinController extends Inchoo_SocialConnect_Contr
             }
 
             $lastName = $info->getLastName();
-            if(empty($lastname)) {
+            if(empty($lastName)) {
                 throw new Exception(
                     $this->__('Sorry, could not retrieve your Linkedin last name. Please try again.')
                 );
@@ -172,7 +172,7 @@ class Inchoo_SocialConnect_LinkedinController extends Inchoo_SocialConnect_Contr
             );
 
             Mage::getSingleton('core/session')->addSuccess(
-                $this->__('Your Linkedin account is now connected to your new user account at our store. Now you can login using our LinkedIn Login button or using store account credentials you will receive to your email address.')
+                $this->__('Your Linkedin account is now connected to your new user account at our store. Now you can login using our LinkedIn Login button.')
             );
         }
     }
