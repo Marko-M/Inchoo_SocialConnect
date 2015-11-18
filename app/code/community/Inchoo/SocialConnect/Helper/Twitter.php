@@ -117,6 +117,7 @@ class Inchoo_SocialConnect_Helper_Twitter extends Mage_Core_Helper_Abstract
         $customer = Mage::getModel('customer/customer');
 
         $collection = $customer->getCollection()
+            ->addAttributeToSelect('inchoo_socialconnect_ttoken')
             ->addAttributeToFilter('inchoo_socialconnect_tid', $twitterId)
             ->setPageSize(1);
 

@@ -125,6 +125,7 @@ class Inchoo_SocialConnect_Helper_Facebook extends Mage_Core_Helper_Abstract
         $customer = Mage::getModel('customer/customer');
 
         $collection = $customer->getCollection()
+            ->addAttributeToSelect('inchoo_socialconnect_ftoken')
             ->addAttributeToFilter('inchoo_socialconnect_fid', $facebookId)
             ->setPageSize(1);
 
