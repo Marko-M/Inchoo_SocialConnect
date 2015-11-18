@@ -115,6 +115,7 @@ class Inchoo_SocialConnect_Helper_Google extends Mage_Core_Helper_Abstract
         $customer = Mage::getModel('customer/customer');
 
         $collection = $customer->getCollection()
+            ->addAttributeToSelect('inchoo_socialconnect_gtoken')
             ->addAttributeToFilter('inchoo_socialconnect_gid', $googleId)
             ->setPageSize(1);
 

@@ -104,7 +104,7 @@ class Inchoo_SocialConnect_Model_Facebook_Info extends Varien_Object
             $response = $this->client->api(
                 '/me',
                 'GET',
-                $this->params
+                array('fields' => implode(',', $this->params))
             );
 
             foreach ($response as $key => $value) {

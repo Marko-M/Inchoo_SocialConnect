@@ -110,6 +110,7 @@ class Inchoo_SocialConnect_Helper_Linkedin extends Mage_Core_Helper_Abstract
         $customer = Mage::getModel('customer/customer');
 
         $collection = $customer->getCollection()
+            ->addAttributeToSelect('inchoo_socialconnect_ltoken')
             ->addAttributeToFilter('inchoo_socialconnect_lid', $linkedinId)
             ->setPageSize(1);
 
