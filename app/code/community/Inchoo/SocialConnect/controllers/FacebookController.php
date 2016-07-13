@@ -176,9 +176,9 @@ class Inchoo_SocialConnect_FacebookController extends Inchoo_SocialConnect_Contr
             $gender = $info->getGender();
             if(empty($gender)) {
                 $gender = null;
-            } else if($gender = 'male') {
+            } else if($gender == 'male') {
                 $gender = 1;
-            } else if($gender = 'female') {
+            } else if($gender == 'female') {
                 $gender = 2;
             }
 
