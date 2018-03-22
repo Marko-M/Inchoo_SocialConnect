@@ -20,7 +20,7 @@ class Inchoo_SocialConnect_Model_Facebook_Oauth2_Client
     const XML_PATH_CLIENT_SECRET = 'customer/inchoo_socialconnect_facebook/client_secret';
 
     const OAUTH2_SERVICE_URI = 'https://graph.facebook.com';
-    const OAUTH2_AUTH_URI = 'https://graph.facebook.com/oauth/authorize';
+    const OAUTH2_AUTH_URI = 'https://www.facebook.com/v2.12/dialog/oauth';
     const OAUTH2_TOKEN_URI = 'https://graph.facebook.com/oauth/access_token';
 
     protected $clientId = null;
