@@ -50,7 +50,7 @@
     </div>
     <div class="col-2">
         <h3><?php echo $this->__('Login') ?></h3>
-        <?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+        <?php echo $this->getMessagesBlock()->toHtml() ?>
         <form id="login-form" action="<?php echo $this->getPostAction() ?>" method="post">
         <fieldset>
             <?php echo $this->getBlockHtml('formkey'); ?>
