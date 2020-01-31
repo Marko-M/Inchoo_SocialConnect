@@ -4,15 +4,20 @@
  *
  * Commercial support is available directly from the [extension author](http://www.techytalk.info/contact/).
  *
- * @category Marko-M
- * @package SocialConnect
- * @author Marko Martinović <marko@techytalk.info>
+ * @category  Marko-M
+ * @package   SocialConnect
+ * @author    Marko Martinović <marko@techytalk.info>
  * @copyright Copyright (c) Marko Martinović (http://www.techytalk.info)
- * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  */
 
 class Inchoo_SocialConnect_Block_Facebook_Button extends Mage_Core_Block_Template
 {
+    /**
+     * @var string
+     */
+    protected static $csrf;
+
     /**
      *
      * @var Inchoo_SocialConnect_Model_Facebook_Oauth2_Client
@@ -35,14 +40,22 @@ class Inchoo_SocialConnect_Block_Facebook_Button extends Mage_Core_Block_Templat
 
         $this->userInfo = Mage::registry('inchoo_socialconnect_facebook_userinfo');
 
-        // CSRF protection
-        Mage::getSingleton('core/session')->setFacebookCsrf($csrf = md5(uniqid(rand(), true)));
-        $this->client->setState($csrf);
-
         Mage::getSingleton('customer/session')
             ->setSocialConnectRedirect(Mage::helper('core/url')->getCurrentUrl());
 
         $this->setTemplate('inchoo/socialconnect/facebook/button.phtml');
+    }
+
+    protected function _beforeToHtml()
+    {
+        if (!static::$csrf) {
+            static::$csrf = md5(uniqid(mt_rand(), true));
+        }
+        // CSRF protection
+        Mage::getSingleton('core/session')->setFacebookCsrf(static::$csrf);
+        $this->client->setState(static::$csrf);
+
+        return parent::_beforeToHtml();
     }
 
     protected function _getButtonUrl()
