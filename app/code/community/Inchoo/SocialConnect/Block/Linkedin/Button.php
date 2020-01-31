@@ -49,7 +49,7 @@ class Inchoo_SocialConnect_Block_Linkedin_Button extends Mage_Core_Block_Templat
     protected function _beforeToHtml()
     {
         if (!static::$csrf) {
-            static::$csrf = Mage::getSingleton('core/session')->getLinkedinCsrf();
+            static::$csrf = md5(uniqid(mt_rand(), true));
         }
         // CSRF protection
         Mage::getSingleton('core/session')->setLinkedinCsrf($csrf = md5(uniqid(rand(), true)));

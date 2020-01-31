@@ -49,7 +49,7 @@ class Inchoo_SocialConnect_Block_Facebook_Button extends Mage_Core_Block_Templat
     protected function _beforeToHtml()
     {
         if (!static::$csrf) {
-            static::$csrf = Mage::getSingleton('core/session')->getFacebookCsrf();
+            static::$csrf = md5(uniqid(mt_rand(), true));
         }
         // CSRF protection
         Mage::getSingleton('core/session')->setFacebookCsrf(static::$csrf);

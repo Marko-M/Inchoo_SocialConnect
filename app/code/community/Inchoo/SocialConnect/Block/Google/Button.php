@@ -50,7 +50,7 @@ class Inchoo_SocialConnect_Block_Google_Button extends Mage_Core_Block_Template
     protected function _beforeToHtml()
     {
         if (!static::$csrf) {
-            static::$csrf = Mage::getSingleton('core/session')->getGoogleCsrf();
+            static::$csrf = md5(uniqid(mt_rand(), true));
         }
         // CSRF protection
         Mage::getSingleton('core/session')->setGoogleCsrf(static::$csrf);
